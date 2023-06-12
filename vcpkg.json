@@ -1,0 +1,14 @@
+{
+  "name" : "renderingworkshop",
+  "version-string" : "1.0.0",
+  "builtin-baseline" : "63366443439398a62afc9a63b34b9a3ba63b1cae",
+  "dependencies" : [ {
+    "name" : "eigen3",
+    "version>=" : "3.4.0#2",
+    "$comment" : "    # this is heuristically generated, and may not be correct\n\n    find_package(Eigen3 CONFIG REQUIRED)\n\n    target_link_libraries(main PRIVATE Eigen3::Eigen)\n"
+  }, {
+    "name" : "opencv",
+    "version>=" : "4.7.0#1",
+    "$comment" : "    # this is heuristically generated, and may not be correct\n\n    find_package(OpenCV CONFIG REQUIRED)\n\n    # note: 10 additional targets are not displayed.\n\n    target_link_libraries(main PRIVATE opencv_ml opencv_dnn opencv_core opencv_flann)\n"
+  } ]
+}
