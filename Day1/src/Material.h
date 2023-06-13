@@ -11,8 +11,6 @@
 
 struct Material {
     Color color;
-    double kd;
-    double emission;
 
 public:
     Material(Color color) : color(std::move(color)) {}
