@@ -23,10 +23,12 @@ void sample() {
     const Eigen::Vector3d campos(0, 10, 100);
     const Eigen::Vector3d camdir = Eigen::Vector3d(0, 0, 0) - campos;
 
-    const Camera camera(campos, camdir, 1600, 9.0 / 16.0, 5);
+    const Camera camera(campos, camdir, 320, 9.0 / 16.0, 5);
 
     const Renderer renderer(bodies, camera);
     const auto image = renderer.render();
+
+    image.show("sample_image.png");
     image.save("sample_image.png");
 }
 
