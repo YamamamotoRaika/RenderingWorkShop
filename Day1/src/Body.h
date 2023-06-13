@@ -21,14 +21,6 @@ struct Body {
         return sphere.hit(ray, hit);
     }
 
-    Eigen::Vector3d getEmission() const {
-        return material.emission * material.color;
-    }
-
-    Eigen::Vector3d getKd() const {
-        return material.kd * material.color;
-    }
-
     Eigen::Vector3d getNormal(const Eigen::Vector3d &p) const {
         return  (p - sphere.center).normalized();
     }
