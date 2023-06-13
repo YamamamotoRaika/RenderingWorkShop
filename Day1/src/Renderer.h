@@ -17,20 +17,12 @@ public:
 
     Camera camera;
     Color bgColor;
-    mutable std::mt19937_64 engine;
-    mutable std::uniform_real_distribution<> dist;
 
     Renderer(const std::vector<Body> &bodies, Camera camera, Color bgColor=Color::Zero());
 
-    double rand() const;
-
     bool hitScene(const Ray &ray, RayHit &hit) const;
 
-    void diffuseSample(const Eigen::Vector3d &incidentPoint, const Eigen::Vector3d &normal, Ray &out_Ray) const;
-
-    static void computeLocalFrame(const Eigen::Vector3d &w, Eigen::Vector3d &u, Eigen::Vector3d &v);
-
-    void directionalSample(const RayHit &hit, Color &out_color) const;
+    Image render() const;
 };
 
 

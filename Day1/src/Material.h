@@ -15,7 +15,7 @@ struct Material {
     double emission;
 
 public:
-    Material(Color color, const double &kd, const double &emission=0.0) : color(std::move(color)), kd(kd), emission(emission) {}
+    Material(Color color) : color(std::move(color)) {}
 };
 
 #endif //DAY_3_MATERIAL_H

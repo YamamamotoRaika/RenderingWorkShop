@@ -8,10 +8,7 @@
 #include <utility>
 
 #include "Sphere.h"
-#include "Image.h"
 #include "Material.h"
-
-#include <array>
 
 struct Body {
     Sphere sphere;

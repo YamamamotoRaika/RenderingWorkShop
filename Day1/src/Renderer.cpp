@@ -8,11 +8,7 @@
 #include <iostream>
 
 Renderer::Renderer(const std::vector<Body> &bodies, Camera camera, Color bgColor)
-: bodies(bodies), camera(std::move(camera)), bgColor(std::move(bgColor)), engine(0), dist(0, 1) {}
-
-double Renderer::rand() const {
-    return dist(engine);
-}
+: bodies(bodies), camera(std::move(camera)), bgColor(std::move(bgColor)) {}
 
 bool Renderer::hitScene(const Ray &ray, RayHit &hit) const {
     hit.t = DBL_MAX;
@@ -29,37 +25,19 @@ bool Renderer::hitScene(const Ray &ray, RayHit &hit) const {
     return hit.idx != -1;
 }
 
-void Renderer::directionalSample(const RayHit &hit, Color &out_color) const {
-    Ray _ray; RayHit _hit;
-    diffuseSample(hit.point, hit.normal, _ray);
-    if(hitScene(_ray, _hit)) {
-        out_color = bodies[hit.idx].getKd().cwiseProduct(bodies[_hit.idx].getEmission());
-    } else {
-        out_color = Color::Zero();
+Image Renderer::render() const {
+    Image image(camera.getFilm().resolution.x(), camera.getFilm().resolution.y());
+    /// フィルム上のピクセル全てに向けてレイを飛ばす
+    for(int p_y = 0; p_y < image.height; p_y++) {
+        for(int p_x = 0; p_x < image.width; p_x++) {
+            const int p_idx = p_y * image.width + p_x;
+            Color color;
+            Ray ray; RayHit hit;
+            camera.filmView(p_x, p_y, ray);
+            color = hitScene(ray, hit) ? bodies[hit.idx].material.color * hit.normal.z() : bgColor;
+            image.pixels[p_idx] = color;
+        }
     }
-}
 
-void Renderer::diffuseSample(const Eigen::Vector3d &incidentPoint, const Eigen::Vector3d &normal, Ray &out_Ray) const {
-    const double phi = 2.0 * EIGEN_PI * dist(engine);
-    const double theta = asin(sqrt(dist(engine)));
-
-    /// normalの方向をy軸とした正規直交基底を作る
-    Eigen::Vector3d u, v;
-    computeLocalFrame(normal, u, v);
-
-    const double _x = sin(theta) * cos(phi);
-    const double _y = cos(theta);
-    const double _z = sin(theta) * sin(phi);
-
-    out_Ray.dir = _x * u + _y * normal + _z * v;
-    out_Ray.org = incidentPoint;
-}
-
-void Renderer::computeLocalFrame(const Eigen::Vector3d &w, Eigen::Vector3d &u, Eigen::Vector3d &v) {
-    if(fabs(w.x()) > 1e-3)
-        u = Eigen::Vector3d::UnitY().cross(w).normalized();
-    else
-        u = Eigen::Vector3d::UnitX().cross(w).normalized();
-
-    v = w.cross(u);
+    return image;
 }
