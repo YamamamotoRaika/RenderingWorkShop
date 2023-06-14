@@ -25,10 +25,10 @@ void sample() {
 
     const Camera camera(campos, camdir, 320, 9.0 / 16.0, 5);
 
-    const Renderer renderer(bodies, camera);
-    const auto image = renderer.render();
+    /// 背景色はわかりやすく灰色
+    const Renderer renderer(bodies, camera, Color(0.1, 0.1, 0.1));
+    const auto image = renderer.render().apply_reinhard_extended_tone_mapping().apply_gamma_correction();
 
-    image.show("sample_image.png");
     image.save("sample_image.png");
 }
 
