@@ -3,6 +3,8 @@
 #include "Camera.h"
 #include "Renderer.h"
 
+/// \衝突判定のテスト
+/// 球を原点に用意してレイを飛ばします
 void intersectTest() {
     const Sphere sphere(1, Eigen::Vector3d::Zero());
     Ray ray(Eigen::Vector3d(0, 0, 10), Eigen::Vector3d(0, 0, -1));

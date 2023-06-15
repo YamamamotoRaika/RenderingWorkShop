@@ -14,10 +14,17 @@ double Renderer::rand() const {
     return dist(engine);
 }
 
+/**
+ * \b シーン内に存在するBodyのうちレイにhitするものを探す
+ * @param ray レイ
+ * @param hit hitした物体の情報を格納するRayHit構造体
+ * @return 何かしらのBodyにhitしたかどうかの真偽値
+ */
 bool Renderer::hitScene(const Ray &ray, RayHit &hit) const {
+    /// hitするBodyのうち最小距離のものを探す
     hit.t = DBL_MAX;
     hit.idx = -1;
-    for(int i = 0; i < bodies.size(); i++) {
+    for(int i = 0; i < bodies.size();++ i) {
         RayHit _hit;
         if(bodies[i].hit(ray, _hit) && _hit.t < hit.t) {
             hit.t = _hit.t;
@@ -26,6 +33,7 @@ bool Renderer::hitScene(const Ray &ray, RayHit &hit) const {
             hit.normal = _hit.normal;
         }
     }
+
     return hit.idx != -1;
 }
 
