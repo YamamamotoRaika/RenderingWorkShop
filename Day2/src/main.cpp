@@ -29,12 +29,12 @@ void sample() {
 
     /// 背景色はわかりやすく灰色
     const Renderer renderer(bodies, camera, Color(0.1, 0.1, 0.1));
-    const unsigned int samples = 100;
+    const unsigned int samples = 10000;
     const auto image1 = renderer.render();
     const auto image2 = renderer.directIlluminationRender(samples).apply_reinhard_extended_tone_mapping().apply_gamma_correction();
 
     image1.save("sample_image.png");
-    image2.save("sample_image2.png");
+    image2.apply_reinhard_extended_tone_mapping().save("sample_image2.png");
 }
 
 void roomRenderingSample() {
@@ -74,12 +74,17 @@ void roomRenderingSample() {
     const Renderer renderer(bodies, camera, Color(0.1, 0.1, 0.1));
     const auto image = renderer.render().apply_reinhard_extended_tone_mapping().apply_gamma_correction();
 
+    const unsigned int samples = 1000;
+    const auto image2 = renderer.directIlluminationRender(samples).apply_reinhard_extended_tone_mapping().apply_gamma_correction();
+
     image.save("sample_image.png");
+    image2.save("sample_image2.png");
 }
 
 int main() {
     std::cout << "Hello, World!" << std::endl;
     intersectTest();
-    sample();
+
+    roomRenderingSample();
     return 0;
 }

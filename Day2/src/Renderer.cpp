@@ -60,6 +60,7 @@ Image Renderer::render() const {
 Image Renderer::directIlluminationRender(const unsigned int &samples) const {
     Image image(camera.getFilm().resolution.x(), camera.getFilm().resolution.y());
     /// フィルム上のピクセル全てに向けてレイを飛ばす
+#pragma omp parallel for
     for(int p_y = 0; p_y < image.height; p_y++) {
         for(int p_x = 0; p_x < image.width; p_x++) {
             const int p_idx = p_y * image.width + p_x;
@@ -67,19 +68,19 @@ Image Renderer::directIlluminationRender(const unsigned int &samples) const {
             camera.filmView(p_x, p_y, ray);
 
             if(hitScene(ray, hit)) {
-                Color color = Color::Zero();
+                Color reflectRadiance = Color::Zero();
                 for(int i = 0; i < samples; ++i) {
                     /// 衝突点xから半球上のランダムな方向にレイを飛ばす
                     Ray _ray; RayHit _hit;
                     diffuseSample(hit.point, hit.normal, _ray);
 
-                    /// もし飛ばしたレイが光源に当たったら輝度を加算\n
-                    if(hitScene(_ray, _hit) && bodies[_hit.idx].isLight()) {
-                        color += bodies[hit.idx].getKd().cwiseProduct(bodies[_hit.idx].getEmission());
+                    /// もしBodyに当たったら,その発光量を加算する
+                    if(hitScene(_ray, _hit)) {
+                        reflectRadiance += bodies[hit.idx].getKd().cwiseProduct(bodies[_hit.idx].getEmission());
                     }
                 }
                 /// 自己発光 + 反射光
-                image.pixels[p_idx] = bodies[hit.idx].getEmission() + color / static_cast<double>(samples);
+                image.pixels[p_idx] = bodies[hit.idx].getEmission() + reflectRadiance / static_cast<double>(samples);
             } else {
                 image.pixels[p_idx] = bgColor;
             }
