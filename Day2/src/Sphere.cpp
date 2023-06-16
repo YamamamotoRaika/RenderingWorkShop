@@ -20,9 +20,9 @@ bool Sphere::hit(const Ray &ray, RayHit &hit) const {
     };
 
     /// どちらの解も0以下なら後ろに衝突とみなしてFalseを返す
-    if((distances < 1e-6).all()) return false;
+    if((distances < 1e-3).all()) return false;
     /// 小さい方の解が0以上なら小さい方、そうでなければ大きい方をを格納する
-    hit.t = distances[0] > 1e-6 ? distances[0] : distances[1];
+    hit.t = distances[0] > 1e-3 ? distances[0] : distances[1];
     hit.point = ray.at(hit.t);
     const auto outwardNormal = (hit.point - center).normalized();
 

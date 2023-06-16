@@ -34,7 +34,7 @@ void sample() {
     const auto image2 = renderer.directIlluminationRender(samples).apply_reinhard_extended_tone_mapping().apply_gamma_correction();
 
     image1.save("sample_image.png");
-    image2.apply_reinhard_extended_tone_mapping().save("sample_image2.png");
+    image2.apply_reinhard_extended_tone_mapping().save("sample.png");
 }
 
 void roomRenderingSample() {
@@ -74,11 +74,11 @@ void roomRenderingSample() {
     const Renderer renderer(bodies, camera, Color(0.1, 0.1, 0.1));
     const auto image = renderer.render().apply_reinhard_extended_tone_mapping().apply_gamma_correction();
 
-    const unsigned int samples = 1000;
+    const unsigned int samples = 1e3;
     const auto image2 = renderer.directIlluminationRender(samples).apply_reinhard_extended_tone_mapping().apply_gamma_correction();
 
     image.save("sample_image.png");
-    image2.save("sample_image2.png");
+    image2.save("sample.png");
 }
 
 int main() {
