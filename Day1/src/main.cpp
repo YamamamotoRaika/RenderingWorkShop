@@ -20,9 +20,10 @@ void sample() {
             Body(Sphere(1.0, Eigen::Vector3d::Zero()), Material(Color(1, 0, 0))),
             Body(Sphere(1.0, Eigen::Vector3d(0, 3, 0)), Material(Color(0, 1, 0))),
             Body(Sphere(1.0, Eigen::Vector3d(0, -3, 0)), Material(Color(0, 0, 1))),
+            Body(Sphere(3.0, Eigen::Vector3d(0, 0, -10)), Material(Color(1, 1, 1))),
     };
 
-    const Eigen::Vector3d campos(0, 10, 100);
+    const Eigen::Vector3d campos(0, 0, 100);
     const Eigen::Vector3d camdir = Eigen::Vector3d(0, 0, 0) - campos;
 
     const Camera camera(campos, camdir, 320, 9.0 / 16.0, 5);
@@ -31,7 +32,7 @@ void sample() {
     const Renderer renderer(bodies, camera, Color(0.5, 0.5, 0.5));
     const auto image = renderer.render();
 
-    image.save("sample_image.png");
+    image.save("day1_goal.png");
 }
 
 int main() {
