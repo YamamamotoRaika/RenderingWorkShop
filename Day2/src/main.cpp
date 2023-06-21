@@ -39,22 +39,22 @@ void sample() {
 
 void roomRenderingSample() {
     const auto room_r = 1e5;
-    const auto floor_color = Color(0.75, 0.75, 0.75);
+    const auto floor_color = codeToColor("#f9c89b");
     const std::vector<Body> room_walls {
-            Body(Sphere(room_r, (room_r - 50) * Eigen::Vector3d::UnitX()), Material(Color(0.25, 0.25, 0.75), 0.8)),
-            Body(Sphere(room_r, -(room_r - 50) * Eigen::Vector3d::UnitX()), Material(Color(0.25, 0.75, 0.25), 0.8)),
-            Body(Sphere(room_r, (room_r - 30) * Eigen::Vector3d::UnitY()), Material(floor_color, 0.8)),
-            Body(Sphere(room_r, -(room_r - 35) * Eigen::Vector3d::UnitY()), Material(floor_color, 0.8)),
-            Body(Sphere(room_r, (room_r - 30) * Eigen::Vector3d::UnitZ()), Material(floor_color, 0.8)),
+            Body(Sphere(room_r, (room_r - 50) * Eigen::Vector3d::UnitX()), Material(codeToColor("#2f5d50"), 0.8, 0.0)),
+            Body(Sphere(room_r, -(room_r - 50) * Eigen::Vector3d::UnitX()), Material(codeToColor("#00a3af"), 0.8, 0.0)),
+            Body(Sphere(room_r, (room_r - 30) * Eigen::Vector3d::UnitY()), Material(floor_color, 0.8, 0.0)),
+            Body(Sphere(room_r, -(room_r - 40) * Eigen::Vector3d::UnitY()), Material(floor_color, 0.8, 0.0)),
+            Body(Sphere(room_r, (room_r - 30) * Eigen::Vector3d::UnitZ()), Material(floor_color, 0.8, 0.0)),
     };
 
     std::vector<Body> bodies {
-            Body(Sphere(16.5, Eigen::Vector3d(25, -14.5, -10)), Material(Color(0.75, 0.25, 0.25), 0.8)),
-            Body(Sphere(16.5, Eigen::Vector3d(-23, -14.5, 15)), Material(Color(0.99, 0.99, 0.99), 0.8)),
+            Body(Sphere(16.5, Eigen::Vector3d(25, -14.5, -10)), Material(Color(0.75, 0.25, 0.25), 0.8, 0.0)),
+            Body(Sphere(16.5, Eigen::Vector3d(-23, -14.5, 7)), Material(Color(0.99, 0.99, 0.99), 0.8, 0.0)),
     };
 
     const std::vector<Body> lights {
-            Body(Sphere(5, Eigen::Vector3d(0, 28, 0)), Material(Color(1, 1, 1), 1.0, 10))
+            Body(Sphere(5, Eigen::Vector3d(0, 34.8, 0)), Material(codeToColor("#e597b2"), 1.0, 30))
     };
 
     for(const auto & room_wall : room_walls) {
@@ -74,8 +74,8 @@ void roomRenderingSample() {
     const Renderer renderer(bodies, camera, Color(0.1, 0.1, 0.1));
     const auto image = renderer.render().apply_reinhard_extended_tone_mapping().apply_gamma_correction();
 
-    const unsigned int samples = 1e3;
-    const auto image2 = renderer.directIlluminationRender(samples).apply_reinhard_extended_tone_mapping().apply_gamma_correction();
+    const unsigned int samples = 1e4;
+    const auto image2 = renderer._directIlluminationRender(samples).apply_reinhard_extended_tone_mapping().apply_gamma_correction();
 
     image.save("sample_image.png");
     image2.save("sample.png");

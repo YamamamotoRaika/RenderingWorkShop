@@ -49,7 +49,7 @@ Image Renderer::render() const {
 
             /// レイを飛ばし、Bodyに当たったらその色を格納する\n
             /// 当たらなければ、背景色を返す
-            color = hitScene(ray, hit) ? bodies[hit.idx].material.color * hit.normal.z() : bgColor;
+            color = hitScene(ray, hit) ? bodies[hit.idx].material.color : bgColor;
             image.pixels[p_idx] = color;
         }
     }
@@ -85,6 +85,44 @@ Image Renderer::directIlluminationRender(const unsigned int &samples) const {
                 image.pixels[p_idx] = bgColor;
             }
 
+        }
+    }
+
+    return image;
+}
+
+Image Renderer::_directIlluminationRender(const unsigned int &samples) const {
+    Image image(camera.getFilm().resolution.x(), camera.getFilm().resolution.y());
+    /// フィルム上のピクセル全てに向けてレイを飛ばす
+#pragma omp parallel for
+    for(int p_y = 0; p_y < image.height; p_y++) {
+        for(int p_x = 0; p_x < image.width; p_x++) {
+            const int p_idx = p_y * image.width + p_x;
+            Ray ray;
+            RayHit hit;
+            camera.filmView(p_x, p_y, ray);
+
+            if (hitScene(ray, hit)) {
+                if(bodies[hit.idx].isLight()) {
+                    image.pixels[p_idx] = bodies[hit.idx].getEmission();
+                } else {
+                    Color reflectRadiance = Color::Zero();
+                    for (int i = 0; i < samples; ++i) {
+                        /// 衝突点hit.pointから半球上のランダムな方向にレイを飛ばす
+                        Ray _ray; RayHit _hit;
+                        diffuseSample(hit.point, hit.normal, _ray);
+
+                        /// もしBodyに当たったら,その発光量を加算する
+                        if (hitScene(_ray, _hit) && bodies[_hit.idx].isLight()) {
+                            reflectRadiance += bodies[hit.idx].getKd().cwiseProduct(bodies[_hit.idx].getEmission());
+                        }
+                    }
+                    /// 自己発光 + 反射光
+                    image.pixels[p_idx] = reflectRadiance / static_cast<double>(samples);
+                }
+            } else {
+                image.pixels[p_idx] = bgColor;
+            }
         }
     }
 

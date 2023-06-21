@@ -5,7 +5,6 @@
 #ifndef DAY_3_BODY_H
 #define DAY_3_BODY_H
 
-#include <utility>
 
 #include "Sphere.h"
 #include "Material.h"
@@ -34,7 +33,7 @@ struct Body {
     }
 
     bool isLight() const {
-        return material.kd > 0.0;
+        return material.emission > 0.0;
     }
 };
 

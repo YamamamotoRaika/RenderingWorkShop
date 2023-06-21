@@ -28,8 +28,8 @@ void sample() {
     const Camera camera(campos, camdir, 320, 9.0 / 16.0, 5);
 
     /// 背景色はわかりやすく灰色
-    const Renderer renderer(bodies, camera, Color(0.1, 0.1, 0.1));
-    const auto image = renderer.render().apply_reinhard_extended_tone_mapping().apply_gamma_correction();
+    const Renderer renderer(bodies, camera, Color(0.5, 0.5, 0.5));
+    const auto image = renderer.render();
 
     image.save("sample_image.png");
 }

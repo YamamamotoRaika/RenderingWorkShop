@@ -42,7 +42,7 @@ Image Renderer::render() const {
             Color color;
             Ray ray; RayHit hit;
             camera.filmView(p_x, p_y, ray);
-            color = hitScene(ray, hit) ? bodies[hit.idx].material.color * hit.normal.z() : bgColor;
+            color = hitScene(ray, hit) ? bodies[hit.idx].material.color : bgColor;
             image.pixels[p_idx] = color;
         }
     }

@@ -32,6 +32,8 @@ public:
 
     Image directIlluminationRender(const unsigned int &samples) const;
 
+    Image _directIlluminationRender(const unsigned int &samples) const;
+
     void diffuseSample(const Eigen::Vector3d &incidentPoint, const Eigen::Vector3d &normal, Ray &out_Ray) const;
 
     static void computeLocalFrame(const Eigen::Vector3d &w, Eigen::Vector3d &u, Eigen::Vector3d &v);
