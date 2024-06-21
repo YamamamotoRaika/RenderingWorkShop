@@ -74,7 +74,7 @@ void roomRenderingSample() {
     const Renderer renderer(bodies, camera, Color(0.1, 0.1, 0.1));
     const auto image = renderer.render().apply_reinhard_extended_tone_mapping().apply_gamma_correction();
 
-    const unsigned int samples = 1e4;
+    const unsigned int samples = 1e3;
     const auto image2 = renderer._directIlluminationRender(samples).apply_reinhard_extended_tone_mapping().apply_gamma_correction();
 
     image.save("sample_image.png");
