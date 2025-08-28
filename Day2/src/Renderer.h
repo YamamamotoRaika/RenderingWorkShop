@@ -30,11 +30,20 @@ public:
 
     Image render() const;
 
+
     Image directIlluminationRender(const unsigned int &samples) const;
 
     Image _directIlluminationRender(const unsigned int &samples) const;
+    Image SSSdirectIlluminationRender(const unsigned int &samples) const;
+    Image _SSSdirectIlluminationRender(const unsigned int &samples) const;
+    Color Renderer::evaluateBSSRDF(const Eigen::Vector3d& xi,
+                                const Eigen::Vector3d& xo,
+                                const Material& material) const;
 
     void diffuseSample(const Eigen::Vector3d &incidentPoint, const Eigen::Vector3d &normal, Ray &out_Ray) const;
+
+    void Renderer::SSSSample(const Eigen::Vector3d &incidentPoint, const double &radius,const Eigen::Vector3d &normal, Ray &out_Ray) const ;
+
 
     static void computeLocalFrame(const Eigen::Vector3d &w, Eigen::Vector3d &u, Eigen::Vector3d &v);
 };
