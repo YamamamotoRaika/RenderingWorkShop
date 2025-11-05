@@ -1,14 +1,28 @@
 cmake_minimum_required(VERSION 3.25)
-project(Day2)
+project(Day3)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(${PROJECT_NAME} src/main.cpp src/Image.cpp src/Ray.h src/Sphere.cpp src/Sphere.h src/Film.h src/Camera.h src/Camera.cpp src/Body.h src/Renderer.cpp src/Renderer.h src/Material.h src/Color.cpp
+add_executable(${PROJECT_NAME}
+        src/main.cpp
+        src/Image.cpp
+        src/Ray.h
+        src/Sphere.cpp
+        src/Sphere.h
+        src/Film.h
+        src/Camera.h
+        src/Camera.cpp
+        src/Body.h
+        src/Renderer.cpp
+        src/Renderer.h
+        src/Material.h
+        src/Color.cpp
         src/Box.h
         src/Box.cpp
         src/Triangle.h
         src/Triangle.cpp
-        ../Day3/src/Mesh.h)
+        src/Mesh.h
+        src/Mesh.cpp)
 
 find_package(Eigen3 CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)

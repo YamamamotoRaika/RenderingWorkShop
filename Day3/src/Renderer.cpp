@@ -64,7 +64,7 @@ Image Renderer::render() const {
             /// 当たらなければ、背景色を返す
             //color = hitScene(ray, hit) ? bodies[hit.idx].material.color : bgColor;
             if (hitScene(ray,hit)) {
-                color=bodies[hit.idx].material.color;
+                color=bodies[hit.idx].getMaterial().color;
                 //std::cout<<hit.idx<<std::endl<<" "<<bodies[hit.idx].show()<<" "<<std::endl<<std::endl;
             }else {
                 color=bgColor;

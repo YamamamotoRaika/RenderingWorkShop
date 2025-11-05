@@ -6,6 +6,9 @@
 Triangle::Triangle(const Eigen::Vector3d &a, const Eigen::Vector3d &b, const Eigen::Vector3d &c)
     : v0(a), v1(b), v2(c) , n((b-a).cross(c-a).normalized()){}
 
+Triangle::Triangle(const Eigen::Vector3d &a, const Eigen::Vector3d &b, const Eigen::Vector3d &c, const Material &m)
+    : v0(a), v1(b), v2(c) , material(m),n((b-a).cross(c-a).normalized()){}
+
 Triangle::Triangle(const Eigen::Vector3d &a, const Eigen::Vector3d &b, const Eigen::Vector3d &c, const Eigen::Vector3d &n)
     : v0(a), v1(b), v2(c) , n(n){}
 
@@ -52,4 +55,7 @@ bool Triangle::hit(const Ray &ray, RayHit &hit) const {
 }
 double Triangle::area() const {
     return 0.5 * (v1 - v0).cross(v2 - v0).norm();
+}
+Material Triangle::getMaterial() const {
+    return  material;
 }
