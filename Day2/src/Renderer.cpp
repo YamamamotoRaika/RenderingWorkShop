@@ -1142,6 +1142,8 @@ void Renderer::_ProfileRadialBSSRDF_RW(const Eigen::Vector3d& xi,
                 const double d  = depth(p);
                 const double s_in = w_in(w);
 
+                std::cout<<s_in<<std::endl;
+
                 // 次に当たる境界まで（レイパラメータ）
                 double dTop = std::numeric_limits<double>::infinity();
                 double dBot = std::numeric_limits<double>::infinity();
@@ -1150,6 +1152,7 @@ void Renderer::_ProfileRadialBSSRDF_RW(const Eigen::Vector3d& xi,
 
                 const bool hitTopBoundary = (dTop < dBot);
                 const double dB = std::min(dTop, dBot);
+
 
                 if (dB < t) {
                     // --- 先に境界に命中：Beer は境界まで ---
@@ -1181,14 +1184,13 @@ void Renderer::_ProfileRadialBSSRDF_RW(const Eigen::Vector3d& xi,
                         const double cosNo = cos_i; // 屈折方向を明示しない簡易扱い
                         const double r = radial(p);
 
-                        //debug countsが何故機能していないのか？
+
 
                         if (r < rMax) {
-                            //std::cout<<"r="<<r<<":rMax="<<rMax<<std::endl;
+
 
                             const int b = int(r / dr);
                             if (b >= 0 && b < bins) {
-                                //std::cout<<"r="<<r<<":rMax="<<rMax<<std::endl;
 
 
                                 const double wgt = ((T[0]+T[1]+T[2]) * (1.0/3.0)) * cosNo;

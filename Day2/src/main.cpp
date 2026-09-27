@@ -421,7 +421,7 @@ void ObjTest() {
         Body(Sphere(5, Eigen::Vector3d(0, 34.8, 0)), Material(codeToColor("#e597b2"), 1.0, 30))
 };
 */
-    loadObj(bodies,"../Day2/apple.obj");
+    loadObj(bodies,"../Day3/lpshead/head.OBJ");
 
 
 /*
@@ -527,8 +527,8 @@ int main() {
     auto start = std::chrono::system_clock::now();
 
 
-    SSSTest();
-
+    //SSSTest();
+    ObjTest();
     //roomRenderingSample_Box();
     auto end = std::chrono::system_clock::now();
 

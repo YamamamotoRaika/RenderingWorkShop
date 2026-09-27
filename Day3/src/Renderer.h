@@ -9,6 +9,8 @@
 #include <vector>
 #include "Body.h"
 #include "Camera.h"
+#include "MultiLayerBSSRDF.h"
+#include "MultiLayerValidate.h"
 #include <random>
 #include <unordered_map>
 #include <memory>
@@ -50,6 +52,7 @@ public:
     double rand() const;
 
     bool hitScene(const Ray &ray, RayHit &hit) const;
+    bool _hitScene(const Ray &ray, RayHit &hit) const;
 
     Image render() const;
 
@@ -68,12 +71,23 @@ public:
                                 const Eigen::Vector3d& xo,
                                 const Material& material) const;
 
+    void Renderer::_Multipole_kensyou(const Eigen::Vector3d &incidentPoint,
+                         const Eigen::Vector3d &normal,
+                         const Material& material,
+                         Ray &out_Ray,double &out_pdfA) const;
+
+
+
     static double evaluateBSSRDFScalarAtDistance(double d, const Material& material);
     static double evaluateBSSRDFScalarAtDistanceSS(double d, const Material& material); // SS
 
     void diffuseSample(const Eigen::Vector3d &incidentPoint, const Eigen::Vector3d &normal, Ray &out_Ray) const;
 
-    void Renderer::SSSSample(const Eigen::Vector3d &incidentPoint, const double &radius, double &r,const Eigen::Vector3d &normal, Ray &out_Ray) const ;
+    void Renderer::SSSSample(const Eigen::Vector3d &incidentPoint,
+                         const Eigen::Vector3d &normal,
+                         const Material& material,
+                         RayHit hit,
+                         Ray &out_Ray,double &out_pdfA) const ;
     void Renderer::_SSSSample(const Eigen::Vector3d &incidentPoint,
                          const Eigen::Vector3d &normal,
                          const Material& material,
@@ -83,12 +97,36 @@ public:
                        const Material& material,
                        Ray& out_Ray,
                        double& out_pdfA) const;
+    void SSSSampleSkinBeardMixed(const Eigen::Vector3d& incidentPoint,
+                                const Eigen::Vector3d& normal,
+                                const Material& skinMat,
+                                const Material& beardMat,
+                                double beardWeight,
+                                Ray& out_Ray,
+                                double& out_pdfA,
+                                bool& out_isBeard) const;
+    void _SSSSampleSkinBeardMixed(const Eigen::Vector3d& incidentPoint,
+                            const Eigen::Vector3d& normal,
+                            const Material& skinMat,
+                            const Material& beardMat,
+                            double beardWeight,
+                            Ray& out_Ray,
+                            double& out_pdfA,
+                            bool& out_isBeard) const;
+
     bool Renderer::projectToSurface(const Eigen::Vector3d& xop,
                                 const Eigen::Vector3d& n_hint,
                                 int bodyId,
                                 Eigen::Vector3d& xo,
                                 Eigen::Vector3d& n_o) const;
    Image Renderer::KAI_SSSdirectIlluminationRender(const unsigned int &samples) const ;
+    Image Renderer::_KAI_SSSdirectIlluminationRender(const unsigned int &samples) const ;
+    // カメラ中心レイのヒット点を xo として、Rd(r) を密度マップ混合で計測
+    bool ProfileRadialBSSRDF_BeardMixed_CameraCenter(size_t angularSamples,
+                                                     double rMax,
+                                                     int bins,
+                                                     const std::string& csvPath) const;
+    //検証用コード
 //検証用コード
     inline double Renderer::urand() const;
     Eigen::Vector3d Renderer::sampleIsotropicDir(double u1, double u2) const;
@@ -150,13 +188,20 @@ public:
 
     double computeRhoBSSRDF(const Eigen::Vector3d& xi, const Material& mat,
                         double rMax, int N, bool includeFresnelOutside) const;
+    // Renderer.h の public: あたりに追加
+    double beardDensity(const  Eigen::Vector2d& uv) const;
 
     void Renderer::Kensyou(const unsigned int &samples) const;
+    void Renderer::loadTex(const std::string fileName) ;
 
 
 
 
     static void computeLocalFrame(const Eigen::Vector3d &w, Eigen::Vector3d &u, Eigen::Vector3d &v);
+
+    Eigen::MatrixXd m_beardDensityLUT; // [h x w] の行列
+    int m_beardW = 0;
+    int m_beardH = 0;
 };
 
 

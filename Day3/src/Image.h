@@ -14,7 +14,7 @@ public:
     int width;
     int height;
 
-    Color *pixels;
+    Color *pixels =nullptr;
 
     Image() = default;
 
@@ -43,13 +43,16 @@ public:
 
     Image resize(const double &scaleRatio) const;
 
+    void setPixel(const int &width, const int &height, const Color &color);
+    Color at(const int &x, const int &y) const;
+
     void show(const std::string &name="display") const;
 
     static Image cvMatToImage(const cv::Mat &mat);
 
     static Image cvMat8U3CToImage(const cv::Mat &mat);
 
-    static Image loadImage(const std::string &filename);
+    bool loadImage(const std::string& filename);  // ★ 戻り値は bool
 };
 
 

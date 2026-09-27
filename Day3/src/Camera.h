@@ -24,10 +24,18 @@ public:
      * @param verticalFoV 視野角（高さ）
      * @param focalLength カメラとフィルムの距離
      */
+
+
     Camera(Eigen::Vector3d position, const Eigen::Vector3d &dir, const int &resolutionHeight, double aspectRatio, double verticalFoV, double focalLength=1.0);
     void filmView(const unsigned int &p_x, const unsigned int &p_y, Ray &out_ray) const;
 
     const Film &getFilm() const;
+    const Eigen::Vector3d &getOrg() {
+        return org;
+    }
+    const Eigen::Vector3d &getUp() {
+        return up;
+    }
 
     Eigen::Vector3d dir;
 };

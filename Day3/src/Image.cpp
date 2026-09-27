@@ -47,6 +47,31 @@ void Image::reinhard_tone_mapping() const {
         }
     }
 }
+void Image::setPixel(const int &x, const int &y, const Color &color) {
+    // 座標チェック
+    if (x < 0 || x >= width || y < 0 || y >= height) return;
+
+    // NaN ガード & 0..1 にクランプ
+    auto clamp01 = [](double v) {
+        if (std::isnan(v)) return 0.0;
+        if (v < 0.0) return 0.0;
+        if (v > 1.0) return 1.0;
+        return v;
+    };
+
+    const int idx = y * width + x;
+    pixels[idx][0] = clamp01(color[0]);
+    pixels[idx][1] = clamp01(color[1]);
+    pixels[idx][2] = clamp01(color[2]);
+}
+
+Color Image::at(const int &x, const int &y) const {
+    // 座標チェック
+    if (x < 0 || x >= width || y < 0 || y >= height) return Color(0, 0, 0);
+
+        const int idx = y * width + x;
+    return pixels[idx];
+}
 
 Image Image::apply_reinhard_extended_tone_mapping() const {
     Image img(width, height);
@@ -124,31 +149,57 @@ Image Image::cvMat8U3CToImage(const cv::Mat &mat) {
 
     return image;
 }
+bool Image::loadImage(const std::string& filename)
+{
+   // std::cerr << "[loadImage] called with filename = " << filename << std::endl;
 
-Image Image::loadImage(const std::string &filename) {
-    cv::Mat img = cv::imread(filename, cv::IMREAD_COLOR);
+    cv::Mat src = cv::imread(filename, cv::IMREAD_COLOR);
 
-    if(img.empty()) {
-        std::cerr << "Could not open or find the image" << std::endl;
-        // エラーハンドリングを行います。
+    if (src.empty()) {
+        std::cerr << "[loadImage] ERROR: Cannot open image: " << filename << std::endl;
+        width  = 0;
+        height = 0;
+
+        if (pixels) {        // ★以前の領域を解放
+            delete[] pixels;
+            pixels = nullptr;
+        }
+
+        return false;
     }
 
-    // OpenCVでは画像はBGR順に格納されているため、RGB順に変換します。
-    cv::cvtColor(img, img, cv::COLOR_BGR2RGB);
+    // BGR → RGB
+    cv::Mat img;
+    cv::cvtColor(src, img, cv::COLOR_BGR2RGB);
 
-    // Imageオブジェクトを作成します。
-    Image image(img.cols, img.rows);
+    width  = img.cols;
+    height = img.rows;
 
-    // OpenCVの画像データをImageオブジェクトにコピーします。
-    for (int i = 0; i < image.height; i++) {
-        for (int j = 0; j < image.width; j++) {
-            cv::Vec3b color = img.at<cv::Vec3b>(i, j);
-            image.pixels[i * image.width + j] = Eigen::Vector3d(color[0], color[1], color[2]) / 255.0;
+    // 既存のメモリを解放
+    if (pixels) {
+        //std::cerr << "[loadImage]   既存のメモリを解放" << std::endl;
+        delete[] pixels;
+        //std::cerr << "after [loadImage]   既存のメモリを解放" << std::endl;
+    }
+
+    // 新しい領域を確保
+    pixels = new Color[width * height];
+
+    //std::cerr << "[loadImage] copying pixels..." << std::endl;
+
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            cv::Vec3b p = img.at<cv::Vec3b>(i, j);
+            pixels[i * width + j] =
+                Color(p[0] / 255.0, p[1] / 255.0, p[2] / 255.0);
         }
     }
 
-    return image;
+  // std::cerr << "[loadImage] finished OK: " << width << "x" << height << std::endl;
+    return true;
 }
+
+
 
 void Image::show(const std::string &name) const {
     const auto mat = toCvMat();

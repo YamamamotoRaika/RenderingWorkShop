@@ -22,7 +22,13 @@ add_executable(${PROJECT_NAME}
         src/Triangle.h
         src/Triangle.cpp
         src/Mesh.h
-        src/Mesh.cpp)
+        src/Mesh.cpp
+        src/AABB.h
+        src/AABB.cpp
+        src/MultiLayerBSSRDF.h
+        src/MultiLayerBSSRDF.cpp
+        src/MultiLayerValidate.cpp
+        src/MultiLayerValidate.h)
 
 find_package(Eigen3 CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)

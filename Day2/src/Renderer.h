@@ -51,6 +51,7 @@ public:
 
     bool hitScene(const Ray &ray, RayHit &hit) const;
 
+
     Image render() const;
 
 

@@ -9,7 +9,9 @@ Camera::Camera(Eigen::Vector3d position, const Eigen::Vector3d &dir, const int &
     : org(std::move(position)), dir(dir.normalized()), focalLength(focalLength) {
 
     /// 度数法からradianに変換
+    ///
     const auto theta = verticalFoV * EIGEN_PI / 180.0;
+
 
     /// thetaからフィルムの空間上における高さを計算
     const double filmHeight = 2.0 * tan(theta / 2.0) * focalLength;

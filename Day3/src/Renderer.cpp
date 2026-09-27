@@ -13,6 +13,7 @@
 #include <cmath>
 #include <limits>
 
+
 #ifndef TWO_PI
 #define TWO_PI (double)(2.0 * EIGEN_PI)
 #endif
@@ -20,6 +21,8 @@
 
 Renderer::Renderer(const std::vector<Body> &bodies, Camera camera, Color bgColor)
         : bodies(bodies), camera(std::move(camera)), bgColor(std::move(bgColor)), engine(0), dist(0, 1) {
+
+    loadTex("../Day3/lpshead/face_beard_density_test.jpg");
 }
 
 /// 乱数生成
@@ -40,6 +43,25 @@ bool Renderer::hitScene(const Ray &ray, RayHit &hit) const {
     for(int i = 0; i < bodies.size();++ i) {
         RayHit _hit;
         if(bodies[i].hit(ray, _hit) && _hit.t < hit.t) {
+
+            hit.t = _hit.t;
+            hit.idx = i;
+            hit.point = _hit.point;
+            hit.normal = _hit.normal;
+        }
+    }
+
+    return hit.idx != -1;
+}
+bool Renderer::_hitScene(const Ray &ray, RayHit &hit) const {
+    /// hitするBodyのうち最小距離のものを探す
+    hit.t = DBL_MAX;
+    hit.idx = -1;
+    for(int i = 0; i < bodies.size();++ i) {
+        if (bodies[i].isBeard()) continue;
+        RayHit _hit;
+        if(bodies[i].hit(ray, _hit) && _hit.t < hit.t) {
+
             hit.t = _hit.t;
             hit.idx = i;
             hit.point = _hit.point;
@@ -460,47 +482,51 @@ Color Renderer::evaluateBSSRDF_Multipole(const Eigen::Vector3d& xi,
 
 Image Renderer::directIlluminationRender(const unsigned int &samples) const {
     Image image(camera.getFilm().resolution.x(), camera.getFilm().resolution.y());
-    /// フィルム上のピクセル全てに向けてレイを飛ばす
 #pragma omp parallel for
-    for(int p_y = 0; p_y < image.height; p_y++) {
-        for(int p_x = 0; p_x < image.width; p_x++) {
+    for (int p_y = 0; p_y < image.height; ++p_y) {
+        for (int p_x = 0; p_x < image.width; ++p_x) {
             const int p_idx = p_y * image.width + p_x;
             Ray ray; RayHit hit;
             camera.filmView(p_x, p_y, ray);
 
-            if(hitScene(ray, hit)) {
-                //debug用
-                //hit.show();
+            if (hitScene(ray, hit)) {
                 Color reflectRadiance = Color::Zero();
-                for(int i = 0; i < samples; ++i) {
-                    /// 衝突点xから半球上のランダムな方向にレイを飛ばす
+                const Color kd = bodies[hit.idx].getKd();
+                for (int i = 0; i < samples; ++i) {
                     Ray _ray; RayHit _hit;
                     diffuseSample(hit.point, hit.normal, _ray);
-
-                    /// もしBodyに当たったら,その発光量を加算する
-                    if(hitScene(_ray, _hit)) {
-
-
-                        reflectRadiance += bodies[hit.idx].getKd().cwiseProduct(bodies[_hit.idx].getEmission());
+                    if (hitScene(_ray, _hit)) {
+                        reflectRadiance += kd.cwiseProduct(bodies[_hit.idx].getEmission());
                     }
                 }
-                /// 自己発光 + 反射光
-                image.pixels[p_idx] = bodies[hit.idx].getEmission() + reflectRadiance / static_cast<double>(samples);
+                image.pixels[p_idx] = bodies[hit.idx].getEmission()
+                    + reflectRadiance / static_cast<double>(samples);
             } else {
                 image.pixels[p_idx] = bgColor;
             }
-
         }
     }
-
     return image;
+}
+inline Eigen::Vector3d d(Eigen::Vector3d x,Eigen::Vector3d org ) {
+    Eigen::Vector3d d=x-org;;
+
+
+    return d;
 }
 
 Image Renderer::_directIlluminationRender(const unsigned int &samples) const {
     Image image(camera.getFilm().resolution.x(), camera.getFilm().resolution.y());
+
+
+
     /// フィルム上のピクセル全てに向けてレイを飛ばす
 #pragma omp parallel for
     for(int p_y = 0; p_y < image.height; p_y++) {
+        int Count_x=0;
+        int Count_xx=0;
+        int Count_xxx=0;
+
         for(int p_x = 0; p_x < image.width; p_x++) {
             const int p_idx = p_y * image.width + p_x;
             Ray ray;
@@ -508,6 +534,10 @@ Image Renderer::_directIlluminationRender(const unsigned int &samples) const {
             camera.filmView(p_x, p_y, ray);
 
             if (hitScene(ray, hit)) {
+                //debug you
+
+
+
                 if(bodies[hit.idx].isLight()) {
                     image.pixels[p_idx] = bodies[hit.idx].getEmission();
                 } else {
@@ -515,20 +545,44 @@ Image Renderer::_directIlluminationRender(const unsigned int &samples) const {
                     for (int i = 0; i < samples; ++i) {
                         /// 衝突点hit.pointから半球上のランダムな方向にレイを飛ばす
                         Ray _ray; RayHit _hit;
-                        diffuseSample(hit.point, hit.normal, _ray);
+                        constexpr double eps = 1e-4; // シーンスケールに合わせて 1e-4〜1e-3 で調整
+                        Eigen::Vector3d org = hit.point + hit.normal ;
+                        //std::cout<<hit.normal<<std::endl;
+
+
+
+
+                        diffuseSample(hit.point, hit.normal, _ray); // hit.point じゃなく org を使う
+
 
                         /// もしBodyに当たったら,その発光量を加算する
-                        if (hitScene(_ray, _hit) && bodies[_hit.idx].isLight()) {
+                        if (hitScene(_ray, _hit) ) {
+                            //kokowomiru
+
+                            Count_x++;
+                            if (hit.idx==_hit.idx) {
+
+                                if (bodies[hit.idx].getId()!=0&&bodies[hit.idx].getId()==bodies[_hit.idx].getId()) {
+                                    Count_xxx++;
+                                }
+                            }
+                            if (bodies[_hit.idx].isLight())  Count_xx++;
+
+                            //std::cout<< bodies[hit.idx].getKd()<<std::endl;
                             reflectRadiance += bodies[hit.idx].getKd().cwiseProduct(bodies[_hit.idx].getEmission());
                         }
                     }
                     /// 自己発光 + 反射光(今回、光源以外に自己発光している物体はなく、光源の場合は除外しているので自己発光の部分は梨)
                     image.pixels[p_idx] = reflectRadiance / static_cast<double>(samples);
                 }
+
+
             } else {
                 image.pixels[p_idx] = bgColor;
             }
+
         }
+        std::cout << "***"<<Count_x << " ," << Count_xx << " ," << Count_xxx << "***"<<std::endl;
     }
 
     return image;
@@ -557,28 +611,78 @@ inline double fresnelT_schlick(double eta, double cosTheta) {
     return 1.0 - Fr; // 透過 Ft
 }
 
-//radiusの値って具体的になんだろう？
-void Renderer::SSSSample(const Eigen::Vector3d &incidentPoint, const double &radius,double &r,const Eigen::Vector3d &normal, Ray &out_Ray) const {
-    const double phi = 2.0 * EIGEN_PI * rand();
-    const double theta = asin(sqrt(rand()));
-    double ran=(double)rand() / (double)RAND_MAX;
-    r=radius*ran;
+void Renderer::SSSSample(const Eigen::Vector3d &incidentPoint,
+                         const Eigen::Vector3d &normal,
+                         const Material& material,
+                         RayHit hit,
+                         Ray &out_Ray,double &out_pdfA) const {
+    const auto& tbl = getRadialTable(material);
 
+    // ---- 1. 半径と方位のサンプル（出口点の位置） ----
+    const double uR   = (double)rand() / (double)RAND_MAX;
+    const double uPhi = rand() ;
 
-    /// normalの方向をy軸とした正規直交基底を作る
+    const double r   = tbl.sampleR(uR);              // 半径
+    const double phi = 2.0 * EIGEN_PI * uPhi;        // 平面上の角度
+
     Eigen::Vector3d u, v;
-    computeLocalFrame(normal, u, v);
+    computeLocalFrame(normal, u, v);                 // 入射法線まわりの接平面
 
-    const double _x = sin(theta) * cos(phi);
-    const double _y = cos(theta);
-    const double _z = sin(theta) * sin(phi);
+    const double dx = r * std::cos(phi);
+    const double dy = r * std::sin(phi);
 
-    //incident_pointから距離_r離した点を考える
-    //角度は今回Φを流用する。修正筆頭ポイント
-    const double d_x =r*cos(phi);
-    const double d_y =r*sin(phi);
+    // 接平面上の候補点
+    Eigen::Vector3d pCandidate = incidentPoint + dx * u + dy * v;
 
-    out_Ray.org = incidentPoint+d_x*u+d_y*v;
+    // ---- 2. 同じBodyの実表面に投影 ----
+    Eigen::Vector3d xo, n_o;
+    if (!projectToSurface(pCandidate, normal, hit.idx, xo, n_o)) {
+        // 投影に失敗したらこのサンプルは寄与ゼロ扱い
+        out_Ray.org  = incidentPoint;
+        out_Ray.dir  = Eigen::Vector3d::Zero();
+        out_pdfA     = 0.0;
+        return;
+    }
+
+    // ---- 3. 出口点での方向サンプル（コサイン半球） ----
+    const double uDir1 = (double)rand() / (double)RAND_MAX;
+    const double uDir2 = rand() ;
+
+    const double phiDir   = 2.0 * EIGEN_PI * uDir1;
+    const double cosTheta = std::sqrt(1.0 - uDir2);
+    const double sinTheta = std::sqrt(uDir2);
+
+    Eigen::Vector3d du, dv;
+    computeLocalFrame(n_o, du, dv);                  // ★ 出口法線 n_o で基底を作る
+
+    const Eigen::Vector3d wi =
+        sinTheta * std::cos(phiDir) * du +
+        cosTheta * n_o +
+        sinTheta * std::sin(phiDir) * dv;
+
+    const double eps = 1e-4;
+    out_Ray.org = xo + n_o * eps;                    // 自己交差防止
+    out_Ray.dir = wi.normalized();
+
+    // ---- 4. 面積PDF p_A(r) の計算 ----
+    // Multipole BSSRDF を使って Rd(r) を評価
+    /*
+    const Color RdC = evaluateBSSRDF_Multipole(incidentPoint, xo, material,
+                                               200,
+                                               0.2,
+                                              5.0);
+    */
+    const Color RdC =evaluateBSSRDF(incidentPoint,out_Ray.org,material);
+    const double Rd = (RdC[0] + RdC[1] + RdC[2]) / 3.0;
+    //std::cout <<"Rd=" <<Rd << std::endl;
+
+    // tbl.Z を ∫_0^∞ 2π r Rd(r) dr として定義している前提なら:
+    const double pA = 2.0 * EIGEN_PI * r * Rd / tbl.Z;
+    out_pdfA = pA;
+
+    // 方向PDF（cosine）は cosTheta / π なので、
+    // それは呼び出し側で別途使う or ここで一緒に返す設計でもOK
+
 }
 
 // 変更前： void Renderer::_SSSSample(..., Ray &out_Ray) const
@@ -603,15 +707,61 @@ void Renderer::_SSSSample(const Eigen::Vector3d &incidentPoint,
     const double dx = r * std::cos(phi);
     const double dy = r * std::sin(phi);
     out_Ray.org = incidentPoint + dx * u + dy * v;
+    //projectToSurface(,,,out_Ray.org,)
+    // ★ 面積pdf： p_A = Rd(r) / Z
+    const double Rd = evaluateBSSRDFScalarAtDistance(r,material);
+   // const Color RdC = evaluateBSSRDF_Multipole(incidentPoint,out_Ray.org,material,200,0.2,5);
+   // const double Rd=(RdC[1]+RdC[2]+RdC[0])/3.0;
+
+    out_pdfA = std::max(1e-18, Rd / tbl.Z);
+
+    //out_pdfA = std::max(1e-18, Rd / tbl.Z);
+}
+
+void Renderer::_Multipole_kensyou(const Eigen::Vector3d &incidentPoint,
+                          const Eigen::Vector3d &normal,
+                          const Material& material,
+                          Ray &out_Ray,
+                          double &out_pdfA) const
+{
+    const auto& tbl = getRadialTable(material);
+
+
+    const double u1 = (double)rand() / (double)RAND_MAX;
+    const double u2 = rand();
+    const double r  = tbl.sampleR(u1);
+    const double phi = 2.0 * EIGEN_PI * u2;
+
+    Eigen::Vector3d u, v;
+    computeLocalFrame(normal, u, v);
+
+    const double dx = r * std::cos(phi);
+    const double dy = r * std::sin(phi);
+    out_Ray.org = incidentPoint + dx * u + dy * v;
 
     // ★ 面積pdf： p_A = Rd(r) / Z
-    //const double Rd = evaluateBSSRDFScalarAtDistance(r,material);
-    const Color RdC = evaluateBSSRDF_Multipole(incidentPoint,out_Ray.org,material,200,0.2,5);
+
+    std::vector<SSSLayer> skin = {
+        // 表皮（薄い・吸収強め）
+        { {0.44,0.22,0.14}, {1.2,1.3,1.4}, 0.8, 1.4, 0.2 },
+        // 真皮（厚い・散乱強）
+        { {0.02,0.03,0.04}, {2.5,3.0,3.5}, 0.8, 1.4, 3.0 }
+    };
+
+    MLProfileSettings opt;
+    opt.imagesPerSide = 8;
+
+    double rr = 0.5; // mm
+    Eigen::Vector3d RdC = Rd_multipole_multilayer(skin, rr, opt);
+
+
+
     const double Rd=(RdC[1]+RdC[2]+RdC[0])/3.0;
     out_pdfA = std::max(1e-18, Rd / tbl.Z);
 
     //out_pdfA = std::max(1e-18, Rd / tbl.Z);
 }
+
 void Renderer::_SSSSampleMixed(const Eigen::Vector3d &incidentPoint,
                                const Eigen::Vector3d &normal,
                                const Material& material,
@@ -649,9 +799,6 @@ void Renderer::_SSSSampleMixed(const Eigen::Vector3d &incidentPoint,
 }
 
 
-
-
-
 Color Renderer::evaluateBSSRDF(const Eigen::Vector3d& xi,
                                 const Eigen::Vector3d& xo,
                                 const Material& material) const {
@@ -661,7 +808,12 @@ Color Renderer::evaluateBSSRDF(const Eigen::Vector3d& xi,
     const Eigen::Vector3d sigma_a = material.sigmas[0] * scale;
     const Eigen::Vector3d sigma_t = sigma_s + sigma_a;
     const Eigen::Vector3d sigma_tr = (sigma_a.cwiseProduct(3.0 * sigma_t)).cwiseSqrt();
-
+    /*
+    std::cout<<"eta="<<eta<<std::endl;
+    std::cout<<"scale="<<scale<<std::endl;
+    std::cout<<"sigma_s="<<sigma_s<<std::endl;
+    std::cout<<"sigma_a="<<sigma_a<<std::endl;
+*/
     const double d = (xo - xi).norm();  // 距離
 
     Eigen::Vector3d Rd;
@@ -679,7 +831,7 @@ Color Renderer::evaluateBSSRDF(const Eigen::Vector3d& xi,
 
         Rd[i] = alpha_prime / (4.0 * EIGEN_PI) * (phi_r + phi_v);
     }
-   // std::cout << "Rd:"<< Rd[0]<<":"<<Rd[1]<<":"<<Rd[2]<< std::endl;
+    //std::cout << "Rd:"<< Rd[0]<<":"<<Rd[1]<<":"<<Rd[2]<< std::endl;
    // std::cout << std::endl;
     return Rd;  // RGBに対応した表面下拡散反射
 }
@@ -712,7 +864,7 @@ Color Renderer::_evaluateBSSRDF(const Eigen::Vector3d& xi,
 }
 
 
-
+//なんか壊れてるわこいつ
 Image Renderer::SSSdirectIlluminationRender(const unsigned int &samples) const {
     Image image(camera.getFilm().resolution.x(), camera.getFilm().resolution.y());
 
@@ -724,19 +876,21 @@ Image Renderer::SSSdirectIlluminationRender(const unsigned int &samples) const {
             RayHit hit;
             camera.filmView(p_x, p_y, ray);
 
-            if (hitScene(ray, hit)) {
-                if (bodies[hit.idx].isLight()) {
-                    image.pixels[p_idx] = bodies[hit.idx].getEmission();
-                } else {
-                    Color reflectRadiance = Color::Zero();
+                if (hitScene(ray, hit)) {
+                    if (bodies[hit.idx].isLight()) {
+                        image.pixels[p_idx] = bodies[hit.idx].getEmission();
+                    } else {
+                        Color reflectRadiance = Color::Zero();
+                        const Color kd = bodies[hit.idx].getKd();
 
-                    for (int i = 0; i < samples; ++i) {
+                        for (int i = 0; i < samples; ++i) {
                         // … ピクセル内ループ …
                         Ray _ray; RayHit _hit;
 
                         // ① 位置：Rd に沿って
                         double pdfA = 0.0;
-                        _SSSSample(hit.point, hit.normal, bodies[hit.idx].material, _ray, pdfA); // xi = _ray.org
+                        _SSSSample(hit.point, hit.normal, bodies[hit.idx].getMaterial(), _ray, pdfA); // xi = _ray.org
+                        //SSSSample(hit.point, hit.normal, bodies[hit.idx].getMaterial(),hit, _ray, pdfA); // xi = _ray.org
 
                         // ② 方向：既存の diffuseSample を使う（コサイン分布）
                         //    → 後で p_dir = cosθ/π で割る
@@ -750,17 +904,18 @@ Image Renderer::SSSdirectIlluminationRender(const unsigned int &samples) const {
 
                             // ③ S = (Ft_i Ft_o / π) * Rd_rgb(d)
                             const double cos_o = std::max(0.0, hit.normal.dot(-ray.dir)); // カメラ側
-                            const double Ft_i  = fresnelT_schlick(bodies[hit.idx].material.eta, cos_i);
-                            const double Ft_o  = fresnelT_schlick(bodies[hit.idx].material.eta, cos_o);
+                            const double Ft_i  = fresnelT_schlick(bodies[hit.idx].getMaterial().eta, cos_i);
+                            const double Ft_o  = fresnelT_schlick(bodies[hit.idx].getMaterial().eta, cos_o);
 
-                            const Color Rd_rgb = evaluateBSSRDF(_ray.org, hit.point, bodies[hit.idx].material);
+
+                            const Color Rd_rgb = evaluateBSSRDF(_ray.org, hit.point, bodies[hit.idx].getMaterial());
                             const Color S_full = (Ft_i * Ft_o / EIGEN_PI) * Rd_rgb;
 
                             //std::cout << (Ft_i * Ft_o / EIGEN_PI)<<std::endl;
 
 
                             // ④ 不偏推定：
-                            reflectRadiance += (Ft_i * Ft_o )*bodies[hit.idx].getKd().cwiseProduct( Li ) / (pdfA );
+                            reflectRadiance += (Ft_i * Ft_o ) * kd.cwiseProduct(Li) / (pdfA);
                         }
                     }
 
@@ -785,28 +940,41 @@ Image Renderer::_SSSdirectIlluminationRender(const unsigned int &samples) const 
             RayHit hit;
             camera.filmView(p_x, p_y, ray);
 
-            if (hitScene(ray, hit)) {
-                if (bodies[hit.idx].isLight()) {
-                    image.pixels[p_idx] = bodies[hit.idx].getEmission();
-                } else {
-                    Color reflectRadiance = Color::Zero();
+                if (hitScene(ray, hit)) {
+                    if (bodies[hit.idx].isLight()) {
+                        image.pixels[p_idx] = bodies[hit.idx].getEmission();
+                    } else {
+                        Color reflectRadiance = Color::Zero();
+                        const Color kd = bodies[hit.idx].getKd();
 
-                    for (int i = 0; i < samples; ++i) {
+                        for (int i = 0; i < samples; ++i) {
                         Ray _ray; RayHit _hit;
 
                         // ★ 基準点は hit.point を渡す（未初期化の _ray.org ではない）
                         double pdfA = 0.0;
-                        _SSSSample(hit.point, hit.normal, bodies[hit.idx].material, _ray, pdfA);
+
+                        // ③ S = (Ft_i Ft_o / π) * Rd_rgb(d)
+                        const double cos_i = std::max(0.0, hit.normal.dot(_ray.dir));
+                        const double cos_o = std::max(0.0, hit.normal.dot(-ray.dir)); // カメラ側
+                        const double Ft_i  = fresnelT_schlick(bodies[hit.idx].getMaterial().eta, cos_i);
+                        const double Ft_o  = fresnelT_schlick(bodies[hit.idx].getMaterial().eta, cos_o);
+
+                        //マルチポール複数層検証用
+                        //_Multipole_kensyou(hit.point, hit.normal, bodies[hit.idx].material, _ray, pdfA);
+                        //SSSSample(hit.point, hit.normal, bodies[hit.idx].getMaterial(),hit, _ray, pdfA);
+                        _SSSSample(hit.point, hit.normal, bodies[hit.idx].getMaterial(), _ray, pdfA); // xi = _ray.org
 
                         // 出射方向のサンプル（従来通り）
                         diffuseSample(_ray.org, hit.normal, _ray);
+
+
 
                         if (hitScene(_ray, _hit) && bodies[_hit.idx].isLight()) {
                             const Color Li = bodies[_hit.idx].getEmission();                 // 光源放射
                             const Color S  = evaluateBSSRDF(_ray.org, hit.point, bodies[hit.idx].material); // Rd評価（RGB）
                             // ★ 面積pdfで割る
                            // reflectRadiance += bodies[hit.idx].getKd().cwiseProduct(S.cwiseProduct(Li)) / pdfA;
-                            reflectRadiance += bodies[hit.idx].getKd().cwiseProduct(Li) / pdfA ;
+                            reflectRadiance += (Ft_i*Ft_o)*bodies[hit.idx].getKd().cwiseProduct(Li) / pdfA ;
                         }
                     }
 
@@ -819,7 +987,520 @@ Image Renderer::_SSSdirectIlluminationRender(const unsigned int &samples) const 
     }
 
     return image;
-}// ======================= Renderer.cpp 差し替えブロック =======================
+}
+
+Image Renderer::KAI_SSSdirectIlluminationRender(const unsigned int &samples) const {
+    Image image(camera.getFilm().resolution.x(), camera.getFilm().resolution.y());
+    //loadTex("beardTex.jpg");
+
+    Material  beardMat=Material(
+    Color(0.1, 0.1, 0.4),
+    0.8,                            // kd（とりあえず肌と同じ）
+    0.0,                            // emission なし
+    1.55,                           // eta: 髪/毛の屈折率っぽく少し高め
+    // sigma_a: 吸収係数（肌よりかなり大きく、特にB成分を強く吸う）
+    Eigen::Vector3d(0.40, 0.55, 0.40),
+    // sigma_s': 拡散係数（肌より小さめで、あまり遠くまで拡散しない）
+    Eigen::Vector3d(0.05, 0.10, 0.30),
+    true                            // isSubsurface
+);
+
+#pragma omp parallel for
+    for(int p_y = 0; p_y < image.height; p_y++) {
+        for(int p_x = 0; p_x < image.width; p_x++) {
+            const int p_idx = p_y * image.width + p_x;
+            Ray ray;
+            RayHit hit;
+            camera.filmView(p_x, p_y, ray);
+
+                if (hitScene(ray, hit)) {
+                    if (bodies[hit.idx].isLight()) {
+                        image.pixels[p_idx] = bodies[hit.idx].getEmission();
+                    } else {
+                        Color reflectRadiance = Color::Zero();
+                        const Color kd = bodies[hit.idx].getKd();
+
+                        for (int i = 0; i < samples; ++i) {
+                        // … ピクセル内ループ …
+                        Ray _ray; RayHit _hit;
+
+                        // ① 位置：Rd に沿って
+                        double pdfA = 0.0;
+                        bool isBeard=true;
+                       // _SSSSample(hit.point, hit.normal, bodies[hit.idx].getMaterial(), _ray, pdfA); // xi = _ray.org
+                       //double beardWeight =beardDensity(bodies[hit.idx].getTriangle().getUV(hit.point));
+                        double beardWeight =beardDensity(bodies[hit.idx].getTriangle().getUV(hit.point));
+                       //double beardWeight =0;
+
+                        //std::cout<<"hit_point="<<hit.point<<std::endl;
+                        //std::cout<<"beardWeight="<<beardWeight<<std::endl;
+
+                       SSSSampleSkinBeardMixed(hit.point, hit.normal, bodies[hit.idx].getMaterial(),beardMat,beardWeight, _ray, pdfA,isBeard);
+                        // ② 方向：既存の diffuseSample を使う（コサイン分布）
+                        //    → 後で p_dir = cosθ/π で割る
+                        diffuseSample(_ray.org, hit.normal, _ray);
+                        const double cos_i = std::max(0.0, hit.normal.dot(_ray.dir));
+
+
+
+                        if (_hitScene(_ray, _hit) && bodies[_hit.idx].isLight()) {
+                            const Color Li = bodies[_hit.idx].getEmission();
+
+                            // ③ S = (Ft_i Ft_o / π) * Rd_rgb(d)
+                            const double cos_o = std::max(0.0, hit.normal.dot(-ray.dir)); // カメラ側
+                            const double Ft_i  = fresnelT_schlick(bodies[hit.idx].getMaterial().eta, cos_i);
+                            const double Ft_o  = fresnelT_schlick(bodies[hit.idx].getMaterial().eta, cos_o);
+
+
+                            const Color Rd_rgb = evaluateBSSRDF(_ray.org, hit.point, bodies[hit.idx].getMaterial());
+                            const Color S_full = (Ft_i * Ft_o / EIGEN_PI) * Rd_rgb;
+
+                            //std::cout << (Ft_i * Ft_o / EIGEN_PI)<<std::endl;
+
+
+                            // ④ 不偏推定
+                            reflectRadiance += (Ft_i * Ft_o )*kd.cwiseProduct( Li ) / (pdfA );
+                        }
+                    }
+
+                    image.pixels[p_idx] = reflectRadiance / static_cast<double>(samples);
+                }
+            } else {
+                image.pixels[p_idx] = bgColor;
+            }
+        }
+    }
+
+    return image;
+}
+
+
+Image Renderer::_KAI_SSSdirectIlluminationRender(const unsigned int &samples) const {
+    Image image(camera.getFilm().resolution.x(), camera.getFilm().resolution.y());
+    //loadTex("beardTex.jpg");
+
+    Material  beardMat=Material(
+    Color(0.1, 0.1, 0.4),
+    0.8,                            // kd（とりあえず肌と同じ）
+    0.0,                            // emission なし
+    1.55,                           // eta: 髪/毛の屈折率っぽく少し高め
+    // sigma_a: 吸収係数（肌よりかなり大きく、特にB成分を強く吸う）
+    Eigen::Vector3d(0.40, 0.55, 0.40),
+    // sigma_s': 拡散係数（肌より小さめで、あまり遠くまで拡散しない）
+    Eigen::Vector3d(0.05, 0.10, 0.30),
+    true                            // isSubsurface
+);
+
+#pragma omp parallel for
+    for(int p_y = 0; p_y < image.height; p_y++) {
+        for(int p_x = 0; p_x < image.width; p_x++) {
+            const int p_idx = p_y * image.width + p_x;
+            Ray ray;
+            RayHit hit;
+            camera.filmView(p_x, p_y, ray);
+
+                if (hitScene(ray, hit)) {
+                    if (bodies[hit.idx].isLight()) {
+                        image.pixels[p_idx] = bodies[hit.idx].getEmission();
+                    } else {
+                        Color reflectRadiance = Color::Zero();
+                        Color kd = bodies[hit.idx].getKd();
+                        if (bodies[hit.idx].type == ShapeType::Mesh) {
+                            const Triangle tri = bodies[hit.idx].getTriangle();
+                            const Eigen::Vector2d uv = tri.getUV(hit.point);
+                            kd = bodies[hit.idx].mesh.getTexture(uv);
+                        }
+
+
+                        for (int i = 0; i < samples; ++i) {
+                        // … ピクセル内ループ …
+                        Ray _ray; RayHit _hit;
+
+                        // ① 位置：Rd に沿って
+                        double pdfA = 0.0;
+                        bool isBeard=true;
+                       // _SSSSample(hit.point, hit.normal, bodies[hit.idx].getMaterial(), _ray, pdfA); // xi = _ray.org
+                       //double beardWeight =beardDensity(bodies[hit.idx].getTriangle().getUV(hit.point));
+                        double beardWeight =beardDensity(bodies[hit.idx].getTriangle().getUV(hit.point));
+                       //double beardWeight =0;
+
+                        //std::cout<<"hit_point="<<hit.point<<std::endl;
+                        //std::cout<<"beardWeight="<<beardWeight<<std::endl;
+
+                       SSSSampleSkinBeardMixed(hit.point, hit.normal, bodies[hit.idx].getMaterial(),beardMat,beardWeight, _ray, pdfA,isBeard);
+                        // ② 方向：既存の diffuseSample を使う（コサイン分布）
+                        //    → 後で p_dir = cosθ/π で割る
+                        diffuseSample(_ray.org, hit.normal, _ray);
+                        const double cos_i = std::max(0.0, hit.normal.dot(_ray.dir));
+
+
+
+                        if (_hitScene(_ray, _hit) && bodies[_hit.idx].isLight()) {
+                            const Color Li = bodies[_hit.idx].getEmission();
+
+                            // ③ S = (Ft_i Ft_o / π) * Rd_rgb(d)
+                            const double cos_o = std::max(0.0, hit.normal.dot(-ray.dir)); // カメラ側
+                            const double Ft_i  = fresnelT_schlick(bodies[hit.idx].getMaterial().eta, cos_i);
+                            const double Ft_o  = fresnelT_schlick(bodies[hit.idx].getMaterial().eta, cos_o);
+
+
+                            const Color Rd_rgb = evaluateBSSRDF(_ray.org, hit.point, bodies[hit.idx].getMaterial());
+                            const Color S_full = (Ft_i * Ft_o / EIGEN_PI) * Rd_rgb;
+
+                            //std::cout << (Ft_i * Ft_o / EIGEN_PI)<<std::endl;
+
+
+                            // ④ 不偏推定
+                            reflectRadiance += (Ft_i * Ft_o )*kd.cwiseProduct( Li ) / (pdfA );
+                        }
+                    }
+
+                    image.pixels[p_idx] = reflectRadiance / static_cast<double>(samples);
+                }
+            } else {
+                image.pixels[p_idx] = bgColor;
+            }
+        }
+    }
+
+    return image;
+}
+bool Renderer::ProfileRadialBSSRDF_BeardMixed_CameraCenter(size_t angularSamples,
+                                                           double rMax,
+                                                           int bins,
+                                                           const std::string& csvPath) const {
+    if (angularSamples == 0 || bins <= 0 || rMax <= 0.0) {
+        std::cout << "[RdProfile] invalid params\n";
+        return false;
+    }
+
+    const int p_x = camera.getFilm().resolution.x() / 2;
+    const int p_y = camera.getFilm().resolution.y() / 2;
+
+    Ray ray;
+    RayHit hit;
+    camera.filmView(p_x, p_y, ray);
+    if (!hitScene(ray, hit)) {
+        std::cout << "[RdProfile] no hit at camera center\n";
+        return false;
+    }
+    if (bodies[hit.idx].isLight()) {
+        std::cout << "[RdProfile] camera center hit light\n";
+        return false;
+    }
+
+    const Material skinMat = bodies[hit.idx].getMaterial();
+    Material beardMat = Material(
+        Color(0.1, 0.1, 1.6),
+        0.8,
+        0.0,
+        1.55,
+        Eigen::Vector3d(0.35, 0.55, 1.6),
+        Eigen::Vector3d(0.05, 0.10, 0.15),
+        true
+    );
+
+    if (bodies[hit.idx].type != ShapeType::Mesh) {
+        std::cout << "[RdProfile] target body is not mesh\n";
+        return false;
+    }
+
+    const Mesh& mesh = bodies[hit.idx].mesh;
+    if (mesh.triangles.empty()) {
+        std::cout << "[RdProfile] mesh has no triangles\n";
+        return false;
+    }
+
+    const double Do = beardDensity(bodies[hit.idx].getTriangle().getUV(hit.point));
+
+    std::ofstream ofs(csvPath);
+    if (!ofs) {
+        std::cout << "[RdProfile] failed to open " << csvPath << "\n";
+        return false;
+    }
+    ofs << "r,Rd_skin,Rd_beard,Rd_mix\n";
+
+    auto avgRGB = [](const Color& c) {
+        return (c[0] + c[1] + c[2]) / 3.0;
+    };
+
+    std::vector<double> sum_skin(bins, 0.0);
+    std::vector<double> sum_beard(bins, 0.0);
+    std::vector<double> sum_mix(bins, 0.0);
+    std::vector<size_t> count(bins, 0);
+
+    std::vector<double> cdf(mesh.triangles.size(), 0.0);
+    double areaSum = 0.0;
+    for (size_t i = 0; i < mesh.triangles.size(); ++i) {
+        areaSum += mesh.triangles[i].area();
+        cdf[i] = areaSum;
+    }
+    if (areaSum <= 0.0) {
+        std::cout << "[RdProfile] mesh area is zero\n";
+        return false;
+    }
+
+    auto sampleTriangle = [&](double u)->const Triangle& {
+        double target = u * areaSum;
+        auto it = std::lower_bound(cdf.begin(), cdf.end(), target);
+        size_t idx = std::min<size_t>(cdf.size() - 1, (size_t)std::distance(cdf.begin(), it));
+        return mesh.triangles[idx];
+    };
+
+    auto samplePointOnTri = [&](const Triangle& tri, double u1, double u2)->Eigen::Vector3d {
+        double su = std::sqrt(u1);
+        double b0 = 1.0 - su;
+        double b1 = su * (1.0 - u2);
+        double b2 = su * u2;
+        return tri.v0 * b0 + tri.v1 * b1 + tri.v2 * b2;
+    };
+
+    for (size_t s = 0; s < angularSamples; ++s) {
+        const Triangle& tri = sampleTriangle(urand());
+        const Eigen::Vector3d xo = samplePointOnTri(tri, urand(), urand());
+        const double r = (xo - hit.point).norm();
+        
+        if (r <= 0.0 || r > rMax) continue;
+
+        const double Di = beardDensity(tri.getUV(xo));
+        double w = 1.0 - (1.0 - Do) * (1.0 - Di);
+        w = std::clamp(w, 0.0, 1.0);
+
+        const Color Rd_skin = evaluateBSSRDF(xo, hit.point, skinMat);
+        const Color Rd_beard = evaluateBSSRDF(xo, hit.point, beardMat);
+        const Color Rd_mix = (1.0 - w) * Rd_skin + w * Rd_beard;
+
+        const int bin = std::min(bins - 1, std::max(0, int((r / rMax) * bins)));
+        sum_skin[bin] += avgRGB(Rd_skin);
+        sum_beard[bin] += avgRGB(Rd_beard);
+        sum_mix[bin] += avgRGB(Rd_mix);
+        count[bin] += 1;
+         for (size_t s = 0; s < angularSamples; ++s) {
+        const Triangle& tri = sampleTriangle(urand());
+        const Eigen::Vector3d xo = samplePointOnTri(tri, urand(), urand());
+        const double r = (xo - hit.point).norm();
+        
+        if (r <= 0.0 || r > rMax) continue;
+
+        const double Di = beardDensity(tri.getUV(xo));
+        double w = 1.0 - (1.0 - Do) * (1.0 - Di);
+        w = std::clamp(w, 0.0, 1.0);
+
+        const Color Rd_skin = evaluateBSSRDF(xo, hit.point, skinMat);
+        const Color Rd_beard = evaluateBSSRDF(xo, hit.point, beardMat);
+        const Color Rd_mix = (1.0 - w) * Rd_skin + w * Rd_beard;
+
+        const int bin = std::min(bins - 1, std::max(0, int((r / rMax) * bins)));
+        sum_skin[bin] += avgRGB(Rd_skin);
+        sum_beard[bin] += avgRGB(Rd_beard);
+        sum_mix[bin] += avgRGB(Rd_mix);
+        count[bin] += 1;
+         
+    }
+
+        
+    }
+
+    for (int i = 0; i < bins; ++i) {
+        const double r = rMax * (double(i) + 0.5) / double(bins);
+        if (count[i] == 0) {
+            ofs << r << ",0,0,0\n";
+           
+        } else {
+            ofs << r << ","
+                << (sum_skin[i] / double(count[i])) << ","
+                << (sum_beard[i] / double(count[i])) << ","
+                << (sum_mix[i] / double(count[i])) << "\n";
+        }
+    }
+
+    std::cout << "[RdProfile] saved " << csvPath << "\n";
+    return true;
+}
+
+void Renderer::SSSSampleSkinBeardMixed(const Eigen::Vector3d& incidentPoint,
+                                       const Eigen::Vector3d& normal,
+                                       const Material& skinMat,
+                                       const Material& beardMat,
+                                       double beardWeight,
+                                       Ray& out_Ray,
+                                       double& out_pdfA,
+                                       bool& out_isBeard) const
+{
+    // --- 0. カバレッジからミックス比を決定 ---
+    // beardWeight: その点で髭が覆っている面積割合 (0 = 髭無し, 1 = 髭だけ)
+    beardWeight = std::clamp(beardWeight, 0.0, 1.0);
+    const double wBeard = beardWeight;
+    const double wSkin  = 1.0 - beardWeight;
+
+    // --- 1. 肌・髭それぞれのラジアルテーブルを取得 ---
+    const auto& tblSkin  = getRadialTable(skinMat);
+    const auto& tblBeard = getRadialTable(beardMat);
+
+    const double Zs = tblSkin.Z;
+    const double Zb = tblBeard.Z;
+
+    // --- 2. どちらの成分からサンプルするか決める ---
+    const double uComp = rand()/RAND_MAX;
+    const bool chooseBeard = (uComp < wBeard);
+    const BSSRDFRadialCDF& tbl = chooseBeard ? tblBeard : tblSkin;
+
+    // --- 3. r, φ をサンプルして出口位置を決める ---
+    const double u1  = (double)rand() / (double)RAND_MAX;
+    const double u2  = (double)rand() / (double)RAND_MAX;
+    const double r   = tbl.sampleR(u1);
+    const double phi = 2.0 * EIGEN_PI * u2;
+
+    Eigen::Vector3d t, b;
+    computeLocalFrame(normal, t, b);
+
+    const double dx = r * std::cos(phi);
+    const double dy = r * std::sin(phi);
+
+    out_Ray.org = incidentPoint + dx * t + dy * b;
+
+    // --- 4. 面積 PDF を計算（混合分布の PDF を返す） ---
+    //   p_A_skin(r)  = 2π r Rd_skin(r)  / Zs
+    //   p_A_beard(r) = 2π r Rd_beard(r) / Zb
+    //   p_mix(r) = wSkin * p_A_skin + wBeard * p_A_beard
+
+    const double Rd_s = Renderer::evaluateBSSRDFScalarAtDistance(r, skinMat);
+    const double Rd_b = Renderer::evaluateBSSRDFScalarAtDistance(r, beardMat);
+
+    double pdfA_skin  = 0.0;
+    double pdfA_beard = 0.0;
+    if (Zs > 0.0) pdfA_skin  = std::max(1e-18, Rd_s / Zs);;
+    if (Zb > 0.0) pdfA_beard = std::max(1e-18, Rd_b / Zb);;
+
+    const double pdfMix = wSkin * pdfA_skin + wBeard * pdfA_beard;
+
+    out_pdfA   = std::max(1e-18, pdfMix);
+    out_isBeard = chooseBeard;
+}
+void Renderer::_SSSSampleSkinBeardMixed(
+    const Eigen::Vector3d& incidentPoint,
+    const Eigen::Vector3d& normal,
+    const Material& skinMat,
+    const Material& beardMat,
+    double beardWeight,      // ρ_beard(x): 0〜1
+    Ray& out_Ray,
+    double& out_pdfA,
+    bool& out_isBeard) const
+{
+    // 0. 髭密度をクランプ
+    const double rho = std::clamp(beardWeight, 0.0, 1.0);
+    const double wSkin  = 1.0 - rho;
+    const double wBeard = rho;
+
+    // 1. パラメータを線形補間して「混合マテリアル」を作る
+    Material mixed = skinMat;   // ベースは肌マテリアルをコピー
+
+    // 吸収・散乱係数を補間
+    mixed.sigmas[0] = wSkin * skinMat.sigmas[0] + wBeard * beardMat.sigmas[0];
+    mixed.sigmas[1] = wSkin * skinMat.sigmas[1] + wBeard * beardMat.sigmas[1];
+
+    // 必要に応じて η や color も補間しても良い（好み）
+    mixed.eta = wSkin * skinMat.eta + wBeard * beardMat.eta;
+    mixed.color = wSkin * skinMat.color + wBeard * beardMat.color;
+
+    // 2. 混合マテリアル用のラジアルテーブルを取得
+    const BSSRDFRadialCDF& tbl = getRadialTable(mixed);
+    const double Z = tbl.Z;
+
+    // 3. r, φ をサンプリング
+    const double u1 = (double)rand() / (double)RAND_MAX;
+    const double u2 = (double)rand() / (double)RAND_MAX;
+    const double r   = tbl.sampleR(u1);
+    const double phi = 2.0 * EIGEN_PI * u2;
+
+    Eigen::Vector3d t, b;
+    computeLocalFrame(normal, t, b);
+
+    const double dx = r * std::cos(phi);
+    const double dy = r * std::sin(phi);
+
+    out_Ray.org = incidentPoint + dx * t + dy * b;
+
+    // 4. 面積 pdf を計算（単一成分なのでシンプル）
+    const double Rd_mix = Renderer::evaluateBSSRDFScalarAtDistance(r, mixed);
+
+    double pdfA = 0.0;
+    if (Z > 0.0) {
+        // 本来は 2πr を含めた形だけど、テーブルの定義に合わせてここは調整してね
+        pdfA = std::max(1e-18, Rd_mix / Z);
+    }
+
+    out_pdfA = pdfA;
+}
+
+
+namespace {
+    // [edge0, edge1] で 0→1 にスムーズに変化する smoothstep
+    inline double smoothstep(double edge0, double edge1, double x)
+    {
+        double t = (x - edge0) / (edge1 - edge0);
+        t = std::clamp(t, 0.0, 1.0);
+        return t * t * (3.0 - 2.0 * t);
+    }
+} // anonymous namespace
+
+double Renderer::beardDensity(const Eigen::Vector2d& uv) const
+{
+    if (m_beardW == 0 || m_beardH == 0) return 0.0;
+
+    double u = uv.x() - std::floor(uv.x());
+    double v = uv.y() - std::floor(uv.y());
+
+    double x = u * (m_beardW  - 1);
+    double y = (1.0 - v) * (m_beardH - 1);
+
+    int x0 = std::clamp((int)std::floor(x), 0, m_beardW  - 1);
+    int y0 = std::clamp((int)std::floor(y), 0, m_beardH - 1);
+    int x1 = std::clamp(x0 + 1, 0, m_beardW  - 1);
+    int y1 = std::clamp(y0 + 1, 0, m_beardH - 1);
+
+    double tx = x - x0;
+    double ty = y - y0;
+
+    auto lerp = [](double a, double b, double t){ return a + (b - a) * t; };
+
+    double c00 = m_beardDensityLUT(y0,x0);
+    double c10 = m_beardDensityLUT(y0,x1);
+    double c01 = m_beardDensityLUT(y1,x0);
+    double c11 = m_beardDensityLUT(y1,x1);
+
+    double v0 = lerp(c00, c10, tx);
+    double v1 = lerp(c01, c11, tx);
+    double w  = lerp(v0,  v1,  ty);
+
+    return std::clamp(w, 0.0, 1.0);
+}
+
+void Renderer::loadTex(const std::string fileName) {
+
+    Image img;  // サイズは loadImage の中で決まる
+
+    if (!img.loadImage(fileName)) {
+        std::cerr << "[Renderer::loadTex] failed to load " << fileName << std::endl;
+        m_beardW = m_beardH = 0;
+        m_beardDensityLUT.resize(0, 0);
+        return;
+    }
+
+    m_beardW = img.width;
+    m_beardH = img.height;
+    m_beardDensityLUT.resize(m_beardH, m_beardW);
+
+    for (int y = 0; y < m_beardH; ++y) {
+        for (int x = 0; x < m_beardW; ++x) {
+            const Eigen::Vector3d& c = img.pixels[y * img.width + x];
+            double g = c[0];  // Rチャンネルを密度として使う
+            m_beardDensityLUT(y, x) = std::clamp(g, 0.0, 1.0);
+        }
+    }
+}
+
+// ======================= Renderer.cpp 差し替えブロック =======================
 // 出口点を実表面に投影（同一 Body 上を保証）
 bool Renderer::projectToSurface(const Eigen::Vector3d& xop,
                                 const Eigen::Vector3d& n_hint,
@@ -911,386 +1592,7 @@ inline Eigen::Vector3d Renderer::offsetP(const Eigen::Vector3d& p, const Eigen::
     return p + eps * n;
 }
 
-// ========== ここから “1点入射のラジアル・プロファイル検証” 本体 ==========
-//
-// ・半無限平板の 1 点 (xi,ni) から“正面入射”を仮定（=入射cos=1）。
-// ・媒質内を等方散乱・NEEなし・Beer減衰で純ランダムウォーク。
-// ・外に出たら、出射点 xo を記録。r=|xo-xi| のヒストグラムを作り Rd_emp を算出。
-// ・理論値は evaluateBSSRDF(xi, xi+r*tangent) を呼んで Rd_theory として出す。
-//
-void Renderer::ProfileRadialBSSRDF_RW(const Eigen::Vector3d& xi,
-                                      const Eigen::Vector3d& ni,
-                                      const Material& mat,
-                                      int bodyId,
-                                      size_t samples,
-                                      double rMax,
-                                      int bins,
-                                      const std::string& csvPath) const
-{
-    // 物性（スケール反映）
-    const double scale = mat.scale;
-    const double g=0.8;
-    const Eigen::Vector3d sigma_a = mat.sigmas[0] * scale;   // RGB
-    const Eigen::Vector3d sigma_s = (1-g)*mat.sigmas[1] * scale;   // RGB
-    const Eigen::Vector3d sigma_t_v = sigma_a + sigma_s;     // RGB
-    const double eta = mat.eta;
 
-    // 代表値（サンプリング用）。RGBを厳密にやるなら追補可。
-    const double sigma_t = std::max(1e-12, sigma_t_v.mean());
-    const Eigen::Vector3d albedo_v = sigma_s.cwiseQuotient(sigma_t_v); // RGB
-    const double albedo = std::clamp(albedo_v.mean(), 0.0, 0.999);
-
-    const double dr = rMax / double(bins);
-    std::vector<double> counts(bins, 0.0); // 重み付きカウント
-    size_t exits = 0;
-
-    // 入射側 Fresnel 透過（正面入射を仮定：cos=1）
-    const double Ft_i = 1.0 - fresnelDielectric_R(1.0, eta, 1.0);
-
-    for (size_t s = 0; s < samples; ++s) {
-        // 表面直下へ入射（法線方向に入る）
-        Eigen::Vector3d p = offsetP(xi, -ni);
-        Eigen::Vector3d w = -ni; // 内部へ
-
-        // スループット（RGB。初期は Ft_i）
-        Eigen::Vector3d T(Ft_i, Ft_i, Ft_i);
-
-        // ランダムウォーク
-        for (int step = 0; step < 1<<20; ++step) {
-            // 1) 自由行程
-            const double t = sampleFreeFlight(urand(), sigma_t);
-            Eigen::Vector3d p_next = p + t * w;
-
-            // 2) 途中で境界に当たるかチェック
-            {
-                Ray r; r.org = p; r.dir = w;
-                RayHit h;
-                if (hitScene(r, h)) {
-                    const double dSurf = (h.point - p).norm();
-                    if (dSurf < t) {
-                        // Beer（境界まで）
-                        const Eigen::Vector3d Tr = ( (-sigma_a * dSurf).array().exp() ).matrix();
-                        T = T.cwiseProduct(Tr);
-
-                        // 内→外のフレネル
-                        const Eigen::Vector3d n_b = h.normal.normalized();
-                        const double cosI = std::max(0.0, -n_b.dot(w));
-                        const double Rb   = fresnelDielectric_R(eta, 1.0, cosI);
-                        const double Ft_o = 1.0 - Rb;
-
-                        // 透過で外へ
-                        if (urand() < Ft_o) {
-                            Eigen::Vector3d wt;
-                            if (refract(w, -n_b, eta, 1.0, wt)) {
-                                // 出口点
-                                const Eigen::Vector3d xo = h.point;
-                                const double rlen = (xo - xi).norm();
-                                if (rlen < rMax) {
-                                    const int b = int(rlen / dr);
-                                    if (b >= 0 && b < bins) {
-                                        // 現在のRGBスループットを Luminance/平均で集計（どちらでもOK）
-                                        const double wgt = (T[0] + T[1] + T[2]) / 3.0;
-                                        counts[b] += wgt;
-                                        exits++;
-                                    }
-                                }
-                                // このフォトンは終了
-                                break;
-                            } else {
-                                // 数値的に希。内部反射扱いへフォールバック
-                            }
-                        }
-
-                        // 内部反射（または屈折失敗） → 反射方向へ
-                        const Eigen::Vector3d w_ref = (w - 2.0 * w.dot(n_b) * n_b).normalized();
-                        p = offsetP(h.point, -n_b);
-                        w = w_ref;
-                        // Beer は境界までで掛けた
-                        continue;
-                    }
-                }
-            }
-
-            // 3) 境界前に媒質内で散乱
-            const Eigen::Vector3d Tr = ( (-sigma_a * t).array().exp() ).matrix();
-            T = T.cwiseProduct(Tr);
-
-            // 散乱イベント：等方（Neumann展開の係数としてアルベドを掛ける近似）
-            T = T.cwiseProduct(albedo_v);
-            p = p_next;
-            w = sampleIsotropicDir(urand(), urand());
-
-            // ロシアンルーレット
-            if (step > 8) {
-                const double q = std::clamp(std::max({T[0],T[1],T[2]}), 0.05, 0.99);
-                if (urand() > q) break;
-                T /= q;
-            }
-        }
-    }
-
-    // --- 経験的 Rd(r) を作成（area normalization）---
-    // Rd_emp(r_i) ≈ (Σ weights_in_bin / samples) / (2π r_i Δr)
-    // 理論 Rd_theory(r_i) は evaluateBSSRDF で評価（RGB平均）
-    std::ofstream ofs(csvPath);
-    ofs << std::setprecision(10);
-    ofs << "r_center,Rd_empirical,Rd_theory(Dipole),Rd_theory(Multipole),\n";
-
-    // 接平面上の任意接線
-    const Eigen::Vector3d tangent = ni.unitOrthogonal();
-
-    for (int i = 0; i < bins; ++i) {
-        const double r  = (i + 0.5) * dr;
-        const double area = std::max(1e-16, (double)EIGEN_PI* 2* r * dr);
-        const double Rd_emp = (counts[i] / double(samples)) / area;
-
-        // 理論：xi から距離 r の点 xo_i（接平面上）で Rd を評価
-        const Eigen::Vector3d xo_i = xi + r * tangent;
-        const Color Rd_rgb = evaluateBSSRDF(xi, xo_i, mat);
-        const Color Rd_rgb_m=evaluateBSSRDF_Multipole(xi, xo_i, mat,5,rMax,3);
-        const double Rd_theory_Dipole = std::max(0.0, (Rd_rgb[0] + Rd_rgb[1] + Rd_rgb[2]) / 3.0);
-        const double Rd_theory_Multipole = std::max(0.0, (Rd_rgb_m[0] + Rd_rgb_m[1] + Rd_rgb_m[2]) / 3.0);
-
-        ofs << r << "," << Rd_emp << "," << Rd_theory_Dipole <<","<<Rd_theory_Multipole<< "\n";
-    }
-    ofs.close();
-
-    std::cout << "[ProfileRadialBSSRDF_RW] samples=" << samples
-              << " exits=" << exits
-              << " csv=" << csvPath << std::endl;
-}
-
-#ifndef TWO_PI
-#define TWO_PI (double)(2.0 * EIGEN_PI)
-#endif
-
-
-
-
-// 安全のためここで定義（ヘッダ不要）
-static constexpr double TWO_PI_CNST = 6.28318530717958647692;
-
-
-void Renderer::_ProfileRadialBSSRDF_RW(const Eigen::Vector3d& xi,
-                                       const Eigen::Vector3d& ni,
-                                       const Material& mat,
-                                       int /*bodyId*/,
-                                       size_t samples,
-                                       double thickness,   // [m]
-                                       double rMax,        // [m]
-                                       int bins,
-                                       const std::string& csvPath) const
-{
-    // --- 材質（単位を [1/m] に統一）---
-    // 例：mat.sigmas が [1/mm] なら、mat.scale=1000 を入れておく。既に [1/m] なら 1.0。
-    const double scale = mat.scale*1000; // ★ ここで *1000 はしない（mat 側で用意）
-    const Eigen::Vector3d sigma_a_v = mat.sigmas[0] * scale;  // [1/m]
-    const Eigen::Vector3d sigma_s_v = mat.sigmas[1] * scale;  // [1/m]（等方なら σs' = σs）
-    const Eigen::Vector3d sigma_t_v = sigma_a_v + sigma_s_v;  // [1/m]
-    const double sigma_t = std::max(1e-12, sigma_t_v.mean()); // サンプリング用代表値
-    const double lt = 1.0 / sigma_t;                          // 平均自由行程 [m]
-    const double eta = mat.eta;
-
-    //std::cout << std::scientific
-    //  << "[diag] sigma_a=" << sigma_a_v.transpose()
-    //  << " sigma_s=" << sigma_s_v.transpose()
-    //  << " sigma_t_mean=" << sigma_t
-    //  << "  l_t=" << lt << " [m]"
-    //  << "  T=" << thickness << " [m] (T/l_t=" << thickness/lt << ")"
-    //  << std::endl;
-
-    // --- ビン ---
-    const double dr = rMax / std::max(1, bins);
-    std::vector<double> counts(bins, 0.0);
-    size_t exits = 0;
-
-    // --- 基底（入射面の法線基準の局所座標） ---
-    const Eigen::Vector3d n = ni.normalized();      // 外向き
-    const Eigen::Vector3d u = n.unitOrthogonal();   // 接線1（tangent）
-    auto depth = [&](const Eigen::Vector3d& P){ return (P - xi).dot(-n); }; // 入射面からの内向き距離 d>=0
-    auto w_in  = [&](const Eigen::Vector3d& W){ return W.dot(-n); };        // 進行方向の内向き成分
-    auto radial = [&](const Eigen::Vector3d& P){
-        Eigen::Vector3d dP = P - xi;
-    //debug dp=0になっているのか？
-        //std::cout<<dP<<std::endl;
-
-        Eigen::Vector3d tP = dP - n * dP.dot(n); // 平面へ正射影
-        return tP.norm();
-    };
-
-    // 入射時フレネル透過（正面入射近似で十分）
-    const double Ft_i = 1.0 - fresnelDielectric_R(1.0, eta, 1.0);
-
-    // --- デバッグカウンタ（厚みが効いているかの確認用） ---
-    size_t hitTop=0, hitBot=0, reflTop=0, reflBot=0, transTop=0, transBot=0;
-
-    // --- 乱数トレーサ ---
-    for (size_t s = 0; s < samples; ++s) {
-        // 表面直下・内向きで開始
-        Eigen::Vector3d p = xi + (-n) * 1e-4;
-        Eigen::Vector3d w = -n;
-
-        // RGBスループット（ここは平均で集計）
-        Eigen::Vector3d T(Ft_i, Ft_i, Ft_i);
-
-        for (;;) {
-            // 自由行程は σt（reduced 媒質の作法：散乱は必ず起きる、吸収は区間 Beer のみ）
-            double t = sampleFreeFlight(urand(), sigma_t);
-
-            // 自由行程 t を境界でクリップしながら進める
-            for (;;) {
-                const double d  = depth(p);
-                const double s_in = w_in(w);
-
-                // 次に当たる境界まで（レイパラメータ）
-                double dTop = std::numeric_limits<double>::infinity();
-                double dBot = std::numeric_limits<double>::infinity();
-                if (s_in < -1e-12) dTop =  d / (-s_in);              // 上面へ
-                if (s_in >  1e-12) dBot = (thickness - d) / ( s_in); // 下面へ
-
-                const bool hitTopBoundary = (dTop < dBot);
-                const double dB = std::min(dTop, dBot);
-
-                if (dB < t) {
-                    // --- 先に境界に命中：Beer は境界まで ---
-                    const Eigen::Vector3d Tr = ((-sigma_a_v * dB).array().exp()).matrix();
-                    T = T.cwiseProduct(Tr);
-
-                    // 境界まで進め、面上に厳密クランプ（接線成分は保持）
-                    p += dB * w;
-                    {
-                        Eigen::Vector3d dP = p - xi;
-                        Eigen::Vector3d tP = dP - n * dP.dot(n);
-                        const double newDepth = hitTopBoundary ? 0.0 : thickness;
-                        p = xi + tP + (-n) * newDepth;
-                    }
-
-                    // 境界の外向き法線
-                    const Eigen::Vector3d nb = hitTopBoundary ? n : (-n);
-                    if (hitTopBoundary) ++hitTop; else ++hitBot;
-
-                    // Fresnel（内→外）。cos は nb に対する入射余弦そのまま（abs 不要）
-                    const double cos_i = std::max(0.0, w.dot(nb));
-                    const double Rb    = fresnelDielectric_R(eta, 1.0, cos_i);
-                    const double Ft_o  = 1.0 - Rb;
-
-                    if (urand() < Ft_o) {
-                        // 透過 → 出射記録（フラックスなので cos を掛ける）
-                        if (hitTopBoundary) ++transTop; else ++transBot;
-
-                        const double cosNo = cos_i; // 屈折方向を明示しない簡易扱い
-                        const double r = radial(p);
-
-                        //debug countsが何故機能していないのか？
-
-                        if (r < rMax) {
-                            //std::cout<<"r="<<r<<":rMax="<<rMax<<std::endl;
-
-                            const int b = int(r / dr);
-                            if (b >= 0 && b < bins) {
-                                //std::cout<<"r="<<r<<":rMax="<<rMax<<std::endl;
-
-
-                                const double wgt = ((T[0]+T[1]+T[2]) * (1.0/3.0)) * cosNo;
-                                counts[b] += wgt;
-                            }
-                        }
-                        ++exits;
-                        goto NEXT_PHOTON; // このフォトン終了
-                    } else {
-                        // 反射（鏡面反射：nb を使う）→ 残り距離で継続
-                        if (hitTopBoundary) ++reflTop; else ++reflBot;
-                        w = (w - 2.0 * w.dot(nb) * nb).normalized();
-                        t -= dB;
-                        if (t <= 1e-12) break; // 残距離ほぼ無し → 散乱へ
-                        continue;               // 残距離で再度境界チェック
-                    }
-                } else {
-                    // --- 境界に届かず媒質内で散乱 ---
-                    const Eigen::Vector3d Tr = ((-sigma_a_v * t).array().exp()).matrix();
-                    T = T.cwiseProduct(Tr);
-                    p += t * w;
-
-                    // reduced 媒質：離散の吸収ブランチは不要（Beer のみで吸収）
-                    // 散乱は必ず発生
-                    w = sampleIsotropicDir(urand(), urand());
-                    break; // 次の自由行程へ
-                }
-            }
-
-            // 検証ではロシアンルーレットは原則オフで OK
-        }
-        NEXT_PHOTON: ;
-    }
-
-    // デバッグ出力
-    std::cout << "T="<<thickness
-              << " hitTop="<<hitTop<<" hitBot="<<hitBot
-              << " reflTop="<<reflTop<<" reflBot="<<reflBot
-              << " transTop="<<transTop<<" transBot="<<transBot
-              << std::endl;
-
-    // --- CSV 出力：Rd_empirical と Multipole 理論の比較 ---
-    std::ofstream ofs(csvPath);
-    ofs << std::setprecision(10);
-    ofs << "r_center,Rd_empirical,Rd_theory\n";
-
-
-
-    const Eigen::Vector3d tangent = u; // 任意接線
-
-    const double _dr=dr*1000;
-
-    for (int i = 0; i < bins; ++i) {
-        const double r = (i + 0.5) * _dr;
-        const double area = std::max(1e-16, TWO_PI_CNST * r * _dr);
-        const double Rd_emp = (counts[i] / double(samples)) / area;
-
-        const double Fdr = Fdr_from_eta(mat.eta);
-        const double C_boundary = 1-Fdr ; // 入出 2 回
-
-
-        // 理論（Multipole）。★ thickness は [m] のまま渡す（*1000 しない）
-        const Eigen::Vector3d xo = xi + r * tangent;
-        const Color Rd_th_c = evaluateBSSRDF_Multipole(xi, xo, mat, thickness*1000, rMax,/*M=*/3);
-        const double Rd_theory = (Rd_th_c[0] + Rd_th_c[1] + Rd_th_c[2]) *C_boundary* (1.0/3.0);
-
-
-        ofs << r << "," << Rd_emp << "," << Rd_theory << "\n";
-    }
-    ofs.close();
-
-    std::cout << "[_ProfileRadialBSSRDF_RW] samples=" << samples
-              << " exits=" << exits
-              << " thickness=" << thickness
-              << " csv=" << csvPath << std::endl;
-}
-// Rd(r) の放射プロファイル（方針A: Fresnelは外で別に掛ける）
-double Renderer::computeRhoBSSRDF(const Eigen::Vector3d& xi, const Material& mat,double rMax, int N, bool includeFresnelOutside) const{
-    const double dr = rMax / N;
-    auto Rd_scalar = [&](double r)->double {
-        double Rd = evaluateBSSRDFScalarAtDistance(r, mat);                     // RGB → スカラー（平均など）
-        return Rd;
-    };
-
-    double integral = 0.0;
-    double prev = Rd_scalar(0.0);
-    for (int i = 1; i <= N; ++i) {
-        double r = i * dr;
-        double cur = Rd_scalar(r);
-        double a = 2.0 * EIGEN_PI * (r - dr) * prev;
-        double b = 2.0 * EIGEN_PI * r * cur;
-        integral += 0.5 * (a + b) * dr;  // 台形公式で ∫ 2π r Rd(r) dr
-        prev = cur;
-    }
-
-    if (includeFresnelOutside) {
-        double Ft_in  = Fdr_from_eta( mat.eta);  // 半球平均の近似
-
-        integral *= (Ft_in * Ft_in);
-    }
-    return integral; // これが ρ_BSSRDF
-}
 
 
 
@@ -1304,90 +1606,46 @@ void  Renderer::Kensyou(const unsigned int &samples) const {
 
     if (hitScene(ray, hit)) {
         const Eigen::Vector3d xi = hit.point;
- //
- //      ProfileRadialBSSRDF_RW(xi,hit.normal,bodies[hit.idx].material,hit.idx,
- //       /*samples=*/samples,  // 100万くらいから（数分〜）
-//
-//    /*rMax=*/20,          // 2cm相当（材質/スケールに合わせて）
-//    /*bins=*/300,
-//    /*csvPath=*/"kensyou_4.csv");
-
-        const double dr = 0.02 / std::max(1, 300);
-        std::ofstream ofs("kensyou_7.csv");
-        ofs << std::setprecision(10);
-        ofs << "r_center,Dipole,Rd_theory_M\n";
-        const Eigen::Vector3d n = hit.normal.normalized();      // 外向き
-        const Eigen::Vector3d u = n.unitOrthogonal();   // 接線1（tangent）
-        const Eigen::Vector3d tangent = u; // 任意接線
-
-        const double _dr=dr*1000;
-
-        for (int i = 0; i < 300; ++i) {
-            const double r = (i + 0.5) * _dr;
-            const double area = std::max(1e-16, TWO_PI_CNST * r * _dr);
-
-
-            const double Fdr = Fdr_from_eta(bodies[hit.idx].material.eta);
-            const double C_boundary = 1-Fdr ; // 入出 2 回
-
-
-            // 理論（Multipole）。★ thickness は [m] のまま渡す（*1000 しない）
-            const Eigen::Vector3d xo = xi + r * tangent;
-            const double Rd_theory =evaluateBSSRDFScalarAtDistance(r,bodies[hit.idx].material);
-            const Color Rd_th_c = evaluateBSSRDF_Multipole(xi, xo, bodies[hit.idx].material, 5*1000, 0.02,/*M=*/3);
-            const double Rd_theory_M = (Rd_th_c[0] + Rd_th_c[1] + Rd_th_c[2]) *C_boundary* (1.0/3.0);
-
-
-            ofs << r << "," << Rd_theory<< "," << Rd_theory_M << "\n";
-        }
-        ofs.close();
-        double ppp=computeRhoBSSRDF(xi,bodies[hit.idx].material,0.02,samples*10,false);
-        Color kddddd=bodies[hit.idx].getKd();
-        double qqq=(kddddd[0]+kddddd[1]+kddddd[2])/3;
-        std::cout<<"kd from mat="<<qqq<<", p_bssrdf="<<ppp<<std::endl;
-
-        double thickness = 0.005;  // 2mm スラブ
-        _ProfileRadialBSSRDF_RW(
-            xi, hit.normal,bodies[hit.idx].material,hit.idx,
-            /*samples=*/samples*10,
-            /*thickness=*/thickness,
-            /*rMax=*/0.02,
-            /*bins=*/300,
-            /*csvPath=*/"kensyou_5.csv"
-        );
-
-        _ProfileRadialBSSRDF_RW(
-            xi, hit.normal,bodies[hit.idx].material,hit.idx,
-            /*samples=*/samples*10,
-            /*thickness=*/0.002,
-            /*rMax=*/0.02,
-            /*bins=*/300,
-            /*csvPath=*/"kensyou_6_1.csv"
-        );
-        _ProfileRadialBSSRDF_RW(
-            xi, hit.normal,bodies[hit.idx].material,hit.idx,
-            /*samples=*/samples*10,
-            /*thickness=*/0.005,
-            /*rMax=*/0.02,
-            /*bins=*/300,
-            /*csvPath=*/"kensyou_6_2.csv"
-        );
-        _ProfileRadialBSSRDF_RW(
-            xi, hit.normal,bodies[hit.idx].material,hit.idx,
-            /*samples=*/samples*10,
-            /*thickness=*/0.02,
-            /*rMax=*/0.02,
-            /*bins=*/300,
-            /*csvPath=*/"kensyou_6_3.csv"
-        );
-
-
-
-
-
+        runMultilayerTest();
 
     }
 
+
+
+}
+void runMultilayerTest()
+{
+    // 例: 2 層の「表皮 + 真皮」スキン
+    std::vector<SSSLayer> skin = {
+        // 表皮（薄い・吸収強め）
+
+        SSSLayer{
+            Eigen::Vector3d(0.44, 0.22, 0.14),
+            Eigen::Vector3d(1.2, 1.3, 1.4),
+            0.8,
+            1.3,
+            0.2
+        },
+
+
+        // 真皮（厚い・散乱強め）
+
+        SSSLayer{
+            Eigen::Vector3d(0.0011, 0.0024, 0.014),
+            Eigen::Vector3d(0.74, 0.88, 1.01),
+            0,
+            1.3,
+            2
+        }
+
+    };
+
+    RWSettings rw;
+    rw.numPhotons = 500000; // 時間に応じて増減
+    rw.numBins    = 100;
+    rw.rMax       = 20.0;
+
+    compareMultilayerMultipoleWithRW(skin, rw, "multilayer_test");
 
 
 }
