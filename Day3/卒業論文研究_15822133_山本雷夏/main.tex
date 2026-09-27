@@ -1,0 +1,73 @@
+﻿\documentclass[11pt,oneside,dvipdfmx]{jbook}
+\input{preamble}
+
+%卒業年度（全角）
+\year{２０２５}
+
+%学年
+%  学部4年生 -> B4
+%  修士2年生 -> M2
+\grade{B4}
+
+%研究題目
+\title{
+    髭密度を考慮した
+    皮膚表面下散乱モデルの提案
+}
+%% 副題
+\subtitle{
+ %副題がない場合はこの行のみを削除．\subtitle 自体はコメントアウト・削除しない．
+}
+
+% 提出日を作成（全角）
+\date{２０２５年１月２８日提出}
+
+% 指導教員名
+\teacher{
+楽　詠\UTF{705D}
+}
+
+% 学籍番号，氏名（いずれも全角）
+\author{１５８２２１３３ 山本 雷夏}
+\西暦
+\begin{document}
+
+% タイトルページの出力
+\maketitle
+
+\large
+\setcounter{page}{0}
+\includepdf[pages=-]{figs/youshi.pdf}
+
+% 前置き部分（目次部分）の出力
+\frontmatter
+\pagestyle{plain}
+
+%目次の出力
+\tableofcontents
+
+% 図目次を出力する場合，次の行を有効にする（コンパイルは2回すること） 
+%\listoffigures
+
+% 表目次を出力する場合，次の行を有効にする（コンパイルは2回すること）
+%\listoftables
+
+\clearpage
+
+%本文の始まり
+\mainmatter 
+
+\input{introduction}
+\input{related_work}
+\input{background}
+\input{experiments}
+\input{results}
+\input{conclusions}
+\input{acknowledgment}
+
+\input{bib}
+
+
+%\input{q_and_a}
+
+\end{document}

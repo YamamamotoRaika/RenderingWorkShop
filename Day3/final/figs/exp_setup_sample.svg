@@ -1,0 +1,51 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+  <defs>
+    <style>
+      .title { font: 28px Arial, sans-serif; fill: #111; }
+      .label { font: 18px Arial, sans-serif; fill: #111; }
+      .small { font: 15px Arial, sans-serif; fill: #222; }
+      .line { stroke: #111; stroke-width: 2.5; }
+      .dash { stroke: #777; stroke-width: 2; stroke-dasharray: 6,6; fill: none; }
+      .arrow { stroke: #111; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+      .dot { fill: #111; }
+      .sensor { fill: #2b6cb0; }
+      .surface { fill: #f2f2f2; stroke: #111; stroke-width: 2; }
+      .light { fill: #fff2a8; stroke: #111; stroke-width: 2; }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,3 L0,6 Z" fill="#111" />
+    </marker>
+  </defs>
+
+  <text x="600" y="40" text-anchor="middle" class="title">Evaluation Scene Setup (sample)</text>
+
+  <!-- Ground plane -->
+  <rect x="120" y="360" width="960" height="40" class="surface"/>
+  <line x1="120" y1="360" x2="1080" y2="360" class="line"/>
+  <text x="140" y="430" class="small">infinite plane (skin material)</text>
+
+  <!-- Point light -->
+  <circle cx="600" cy="140" r="18" class="light"/>
+  <text x="600" y="110" text-anchor="middle" class="small">point light</text>
+
+  <!-- Incident ray -->
+  <path d="M600,160 L600,360" class="arrow"/>
+  <text x="615" y="250" class="small">normal incidence</text>
+
+  <!-- Entry point -->
+  <circle cx="600" cy="360" r="6" class="dot"/>
+  <text x="610" y="350" class="small">entry point</text>
+
+  <!-- Measurement ring and sensors -->
+  <path d="M600,360 C520,360 480,360 420,360" class="dash"/>
+  <text x="420" y="330" class="small">radius r</text>
+
+  <!-- Sensors on ring (schematic) -->
+  <circle cx="520" cy="360" r="5" class="sensor"/>
+  <circle cx="480" cy="360" r="5" class="sensor"/>
+  <circle cx="440" cy="360" r="5" class="sensor"/>
+  <text x="450" y="390" class="small">measurement points</text>
+
+  <!-- Side note -->
+  <text x="600" y="520" text-anchor="middle" class="small">Measure Rd(r) on rings centered at the entry point</text>
+</svg>

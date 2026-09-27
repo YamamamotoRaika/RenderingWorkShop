@@ -1,0 +1,105 @@
+﻿<?xml version="1.0"?>
+<scene version="3.0.0">
+<!--
+<integrator type="volpathmis">
+  <integer name="max_depth" value="8"/>
+  <boolean name="hide_emitters" value="true"/>
+</integrator>
+-->
+<integrator type="volpathmis">
+  <integer name="max_depth" value="8"/>
+  <boolean name="hide_emitters" value="true"/>
+</integrator>
+
+<sensor type="perspective" id="cam">
+  <transform name="to_world">
+    <lookat origin="0, 1.5, 0" target="0, 0.0, 0" up="0, 0, 1"/>
+  </transform>
+  <float name="fov" value="35"/>
+  <sampler type="independent">
+    <integer name="sample_count" value="16"/>
+  </sampler>
+  <film type="hdrfilm">
+    <integer name="width" value="1024"/>
+    <integer name="height" value="1024"/>
+    <string name="pixel_format" value="rgb"/>
+    <string name="component_format" value="float32"/>
+  </film>
+</sensor>
+
+<!--
+  <emitter type="point">
+    <rgb name="intensity" value="5000,5000,5000"/>
+    <transform name="to_world">
+      <translate x="0" y="0.25" z="0"/>
+    </transform>
+  </emitter>
+-->
+<!--   
+<emitter type="spot" id="keylight">
+  <rgb name="intensity" value="5000,5000,5000"/>
+  <float name="cutoff_angle" value="5"/>     
+  <float name="beam_width" value="3"/>
+  <transform name="to_world">
+    <lookat origin="0,0.25,0" target="0,0,0" up="0,0,1"/>
+  </transform>
+</emitter>
+-->
+<emitter type="constant" id="fill_env">
+  <rgb name="radiance" value="0.2,0.2,0.2"/>
+</emitter>
+<!--
+<shape type="disk" id="src_disk">
+  <transform name="to_world">
+   
+    <scale value="0.05"/>
+
+    <translate x="0" y="0.5" z="0"/>
+    
+  </transform>
+
+  <emitter type="point" id="keylight">
+    <point name="position" x="0" y="0.2501" z="0"/>
+    <rgb name="intensity" value="1,1,1"/>
+  </emitter>
+
+
+ 
+  <bsdf type="null"/>
+</shape>
+-->
+  <medium type="homogeneous" id="skin_medium">
+    <rgb name="albedo" value="0.95, 0.85, 0.75"/>
+    <float name="sigma_t" value="50.0"/>
+    <phase type="hg">
+      <float name="g" value="0.0"/>
+    </phase>
+  </medium>
+
+  <!-- 蠅・阜縺ｯ null・嗄edium 縺ｸ縺ｮ蜈･蜃ｺ繧帝が鬲斐＠縺ｪ縺・-->
+  <bsdf type="null" id="skin_boundary"/>
+
+  <bsdf type="diffuse" id="black">
+    <rgb name="reflectance" value="0,0,0"/>
+  </bsdf>
+
+  
+  <!-- Skin slab -->
+  <shape type="cube" id="skin">
+    <transform name="to_world">
+      <scale x="5.0" y="0.1" z="5.0"/>
+      <translate x="0" y="0.0" z="0"/>
+    </transform>
+
+    <ref id="skin_boundary"/>
+
+    <!-- 笘・％繧後′豁｣隗｣・嘖hape 縺ｫ medium 繧貞牡繧雁ｽ薙※繧・-->
+    <ref name="interior" id="skin_medium"/>
+  </shape>
+
+  
+  <!-- Probe disk -->
+</scene>
+
+
+

@@ -1,0 +1,1630 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<scene version="3.0.0">
+  <integrator type="volpathmis">
+    <integer name="max_depth" value="8" />
+    <boolean name="hide_emitters" value="true" />
+  </integrator>
+
+<sensor type="perspective" id="cam">
+  <transform name="to_world">
+    <lookat origin="0, 1.0, 0" target="0, 0.0, 0" up="0, 0, 1"/>
+  </transform>
+  <float name="fov" value="35"/>
+  <sampler type="independent">
+    <integer name="sample_count" value="16"/>
+  </sampler>
+  <film type="hdrfilm">
+    <integer name="width" value="1024"/>
+    <integer name="height" value="1024"/>
+    <string name="pixel_format" value="rgb"/>
+    <string name="component_format" value="float32"/>
+  </film>
+</sensor>
+  <bsdf type="diffuse" id="hair_bsdf">
+    <rgb name="reflectance" value="0.18, 0.12, 0.08" />
+  </bsdf>
+ 
+<!--照明-->
+  <emitter type="constant" id="fill_env">
+  <rgb name="radiance" value="0.7,0.7,0.7"/>
+</emitter>
+
+
+<shape type="disk" id="src_disk">
+  <transform name="to_world">
+   
+    <scale value="0.08"/>
+
+    <translate x="0" y="0.5" z="0"/>
+    
+  </transform>
+
+  <emitter type="point" id="keylight">
+    <point name="position" x="0" y="0.2501" z="0"/>
+    <rgb name="intensity" value="0.3,0.3,0.3"/>
+  </emitter>
+
+
+ 
+  <bsdf type="null"/>
+</shape>
+<!--照明　ここまで-->
+
+  <medium type="homogeneous" id="skin_medium">
+    <rgb name="albedo" value="0.95, 0.85, 0.75"/>
+    <float name="sigma_t" value="50.0"/>
+    <phase type="hg">
+      <float name="g" value="0.0"/>
+    </phase>
+  </medium>
+
+  <medium type="homogeneous" id="hair_medium">
+    <rgb name="albedo" value="0.9, 0.7, 0.5"/>
+    <float name="sigma_t" value="120.0"/>
+    <phase type="hg">
+      <float name="g" value="0.0"/>
+    </phase>
+  </medium>
+
+ 
+  <bsdf type="null" id="skin_boundary" />
+  <bsdf type="diffuse" id="black">
+    <rgb name="reflectance" value="0,0,0" />
+  </bsdf>
+  <shape type="cube" id="skin">
+    <transform name="to_world">
+      <scale x="5.0" y="0.1" z="5.0" />
+      <translate x="0" y="0.0" z="0" />
+    </transform>
+    <ref id="skin_boundary" />
+    <ref name="interior" id="skin_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="2.58791032e-05 0.000549390819 0 0.214568626 0 0 0.005 0.09 0.000549390819 -2.58791032e-05 0 -0.0272630044 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000484548294 -0.000260217123 0 0.202063738 -0 0 0.005 0.09 -0.000260217123 0.000484548294 0 0.0378246836 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000105821593 0.000539723809 0 0.122581229 0 0 0.005 0.09 0.000539723809 -0.000105821593 0 -0.1210675034 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000365831183 -0.000410691546 0 -0.1707990758 -0 0 0.005 0.09 -0.000410691546 0.000365831183 0 0.0567094786 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="5.04478717e-05 0.000547681488 0 -0.1457783022 0 0 0.005 0.09 0.000547681488 -5.04478717e-05 0 -0.177370034 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000140418569 -0.000531773096 0 0.213854718 -0 0 0.005 0.09 -0.000531773096 0.000140418569 0 -0.20030135 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000261939174 -0.00048361955 0 0.0466731868 -0 0 0.005 0.09 -0.00048361955 0.000261939174 0 -0.1890927382 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="6.53786405e-05 -0.000546100388 0 0.0259589778 0 -0 0.005 0.09 -0.000546100388 -6.53786405e-05 0 0.1665317478 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000158786563 -0.000526580314 0 -0.1753900242 0 -0 0.005 0.09 -0.000526580314 -0.000158786563 0 0.199417129 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="1.99706756e-05 0.00054963731 0 -0.2211222 0 0 0.005 0.09 0.00054963731 -1.99706756e-05 0 0.00372688586 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000183621566 0.000518442977 0 -0.01249961434 0 0 0.005 0.09 0.000518442977 -0.000183621566 0 -0.0564201772 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000432982779 0.000339154703 0 -0.154558517 0 0 0.005 0.09 0.000339154703 -0.000432982779 0 0.0263719092 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000426474141 0.000347303624 0 0.1246507868 0 0 0.005 0.09 0.000347303624 -0.000426474141 0 0.210189236 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000515690552 0.000191215205 0 -0.211788772 0 0 0.005 0.09 0.000191215205 0.000515690552 0 -0.1626795004 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.00045402114 0.00031042681 0 -0.1588975632 0 0 0.005 0.09 0.00031042681 -0.00045402114 0 0.209170582 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000445786019 -0.000322141003 0 -0.21111111 0 -0 0.005 0.09 -0.000322141003 -0.000445786019 0 -0.052355577 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000538297419 0.000112853396 0 0.145573006 0 0 0.005 0.09 0.000112853396 0.000538297419 0 -0.01106994226 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000203764657 -0.000510861982 0 0.1459782432 0 -0 0.005 0.09 -0.000510861982 -0.000203764657 0 0.1755210954 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000386154123 0.000391643962 0 0.1447809338 0 0 0.005 0.09 0.000391643962 -0.000386154123 0 -0.0939876988 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.00010237782 -0.000540387622 0 -0.029412495 -0 0 0.005 0.09 -0.000540387622 0.00010237782 0 -0.1750449928 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000457580009 -0.000305156576 0 -0.00680746962 -0 0 0.005 0.09 -0.000305156576 0.000457580009 0 0.1461576408 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000511452618 0.000202277581 0 -0.1711394944 0 0 0.005 0.09 0.000202277581 0.000511452618 0 0.0932231166 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000454595934 0.000309584458 0 0.1876756848 0 0 0.005 0.09 0.000309584458 -0.000454595934 0 -0.166108031 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000180863609 -0.000519411547 0 0.1612588708 0 -0 0.005 0.09 -0.000519411547 -0.000180863609 0 0.135038702 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000535886123 -0.000123798479 0 -0.0481881968 0 -0 0.005 0.09 -0.000123798479 -0.000535886123 0 -0.208041764 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000225306772 0.000501733852 0 0.0030888273 0 0 0.005 0.09 0.000501733852 0.000225306772 0 -0.1896728124 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.00022231819 0.000503065227 0 -0.0841864278 0 0 0.005 0.09 0.000503065227 -0.00022231819 0 0.204723492 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000525069426 0.000163713463 0 -0.1964201626 0 0 0.005 0.09 0.000163713463 -0.000525069426 0 -0.0339000414 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-1.78936708e-06 -0.000549997089 0 0.0942355594 -0 0 0.005 0.09 -0.000549997089 1.78936708e-06 0 0.1781825372 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-5.18771493e-05 -0.000547547953 0 -0.1638229242 -0 0 0.005 0.09 -0.000547547953 5.18771493e-05 0 0.1649956396 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000521150822 -0.000175789137 0 -0.1496426376 0 -0 0.005 0.09 -0.000175789137 -0.000521150822 0 0.0388754328 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000544103886 8.03178757e-05 0 0.015796744 0 0 0.005 0.09 8.03178757e-05 0.000544103886 0 -0.0001898400712 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000387699704 -0.000390114009 0 -0.1764713142 -0 0 0.005 0.09 -0.000390114009 0.000387699704 0 -0.1697708842 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.00048960535 -0.000250572548 0 0.157475874 0 -0 0.005 0.09 -0.000250572548 -0.00048960535 0 -0.1979150988 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000549321075 2.73195172e-05 0 0.0803607112 0 0 0.005 0.09 2.73195172e-05 0.000549321075 0 0.1636088536 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000548087863 -4.58224283e-05 0 -0.1301645016 -0 0 0.005 0.09 -4.58224283e-05 0.000548087863 0 -0.0309247058 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000390650067 0.00038715956 0 0.1485049858 0 0 0.005 0.09 0.00038715956 0.000390650067 0 -0.0546474996 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000258774751 -0.000485320129 0 0.01724435128 0 -0 0.005 0.09 -0.000485320129 -0.000258774751 0 0.1936909852 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000303027033 0.000458993047 0 0.1595780692 0 0 0.005 0.09 0.000458993047 -0.000303027033 0 0.1558331814 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000542254038 -9.19812914e-05 0 -0.0412813106 0 -0 0.005 0.09 -9.19812914e-05 -0.000542254038 0 0.1645992054 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000537670243 -0.00011580462 0 -0.0573397126 -0 0 0.005 0.09 -0.00011580462 0.000537670243 0 -0.1316125212 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000200683729 -0.000512080112 0 -0.205850482 0 -0 0.005 0.09 -0.000512080112 -0.000200683729 0 0.173617974 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000244527557 0.000492652285 0 -0.1539524758 0 0 0.005 0.09 0.000492652285 -0.000244527557 0 -0.0883581052 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="7.03460881e-05 -0.000545482748 0 -0.0327012316 0 -0 0.005 0.09 -0.000545482748 -7.03460881e-05 0 0.0840862938 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000402053598 -0.000375303749 0 -0.01013748876 0 -0 0.005 0.09 -0.000375303749 -0.000402053598 0 -0.1606202136 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000235201582 0.00049717222 0 -0.135208729 0 0 0.005 0.09 0.00049717222 0.000235201582 0 0.00867759002 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000521625932 0.000174374274 0 0.1774228354 0 0 0.005 0.09 0.000174374274 0.000521625932 0 0.1735278682 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000408805759 -0.000367937292 0 0.173925235 0 -0 0.005 0.09 -0.000367937292 -0.000408805759 0 -0.1822930214 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000308115638 0.00045559275 0 -0.200011342 0 0 0.005 0.09 0.00045559275 0.000308115638 0 -0.1655918774 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-1.49340963e-05 0.000549797211 0 0.22087763 0 0 0.005 0.09 0.000549797211 1.49340963e-05 0 0.176646921 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000183148174 0.0005186104 0 0.0855859964 0 0 0.005 0.09 0.0005186104 0.000183148174 0 -0.1779300982 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000540873146 -9.97809605e-05 0 -0.140499489 0 -0 0.005 0.09 -9.97809605e-05 -0.000540873146 0 0.1445708056 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000474748608 -0.000277693643 0 0.0470137082 0 -0 0.005 0.09 -0.000277693643 -0.000474748608 0 -0.173768248 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000292453831 -0.000465801199 0 -0.1669482526 -0 0 0.005 0.09 -0.000465801199 0.000292453831 0 0.17944928 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000417286649 0.000358290179 0 0.1491037176 0 0 0.005 0.09 0.000358290179 -0.000417286649 0 -0.1717107202 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-9.00822387e-05 0.000542572751 0 -0.212817182 0 0 0.005 0.09 0.000542572751 9.00822387e-05 0 0.225711064 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000219840562 -0.000504152881 0 0.225703794 0 -0 0.005 0.09 -0.000504152881 -0.000219840562 0 0.00720015126 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000517295079 -0.000186830943 0 -0.198261451 0 -0 0.005 0.09 -0.000186830943 -0.000517295079 0 0.1794071638 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-1.51214252e-05 -0.00054979209 0 0.1883712406 -0 0 0.005 0.09 -0.00054979209 1.51214252e-05 0 -0.1289844172 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000480140415 -0.000268263269 0 0.14304083 0 -0 0.005 0.09 -0.000268263269 -0.000480140415 0 0.0840656538 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.00020231403 0.000511438201 0 -0.1552342254 0 0 0.005 0.09 0.000511438201 0.00020231403 0 -0.000268626846 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000376152652 -0.000401259495 0 -0.1656282066 -0 0 0.005 0.09 -0.000401259495 0.000376152652 0 0.01486434048 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000472083709 0.000282200234 0 0.206535842 0 0 0.005 0.09 0.000282200234 -0.000472083709 0 -0.1780885616 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.00043841722 0.000332099897 0 0.00230165898 0 0 0.005 0.09 0.000332099897 0.00043841722 0 0.1257862518 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000120252708 -0.000536692916 0 0.095784561 -0 0 0.005 0.09 -0.000536692916 0.000120252708 0 0.0283923118 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000235043821 0.000497246822 0 -0.0246846304 0 0 0.005 0.09 0.000497246822 0.000235043821 0 -0.0590162844 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000334477583 -0.00043660594 0 0.0808999792 -0 0 0.005 0.09 -0.00043660594 0.000334477583 0 0.1777031056 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000452577359 -0.000312527974 0 -0.1251554152 0 -0 0.005 0.09 -0.000312527974 -0.000452577359 0 0.1393893312 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="2.49215245e-05 -0.00054943509 0 0.0869640566 0 -0 0.005 0.09 -0.00054943509 -2.49215245e-05 0 -0.0552980954 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000529896433 -0.000147342359 0 -0.0238852042 0 -0 0.005 0.09 -0.000147342359 -0.000529896433 0 -0.1931181582 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000446556344 -0.000321072315 0 -0.1619687606 -0 0 0.005 0.09 -0.000321072315 0.000446556344 0 0.081381981 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000431155815 -0.00034147425 0 0.1354562366 0 -0 0.005 0.09 -0.00034147425 -0.000431155815 0 0.1675578252 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000534617935 0.000129165259 0 -0.1499372622 0 0 0.005 0.09 0.000129165259 -0.000534617935 0 0.1641352646 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000545938823 -6.6714325e-05 0 0.225442464 -0 0 0.005 0.09 -6.6714325e-05 0.000545938823 0 0.0553939702 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000447477422 -0.000319787361 0 -0.1690498056 -0 0 0.005 0.09 -0.000319787361 0.000447477422 0 0.188683765 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000316986826 -0.000449465629 0 0.1904345582 -0 0 0.005 0.09 -0.000449465629 0.000316986826 0 -0.0146980461 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000547281748 5.46139923e-05 0 -0.0475390582 0 0 0.005 0.09 5.46139923e-05 -0.000547281748 0 0.1280674544 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000377692127 0.000399810777 0 -0.0861352942 0 0 0.005 0.09 0.000399810777 -0.000377692127 0 0.223271394 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000305032508 -0.000457662724 0 0.1679354226 -0 0 0.005 0.09 -0.000457662724 0.000305032508 0 0.01563479678 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000244734114 0.000492549707 0 -0.0817710648 0 0 0.005 0.09 0.000492549707 0.000244734114 0 -0.1630866206 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000291862775 0.000466171772 0 0.165634458 0 0 0.005 0.09 0.000466171772 0.000291862775 0 -0.01984075758 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000298749379 -0.000461788706 0 0.214888488 0 -0 0.005 0.09 -0.000461788706 -0.000298749379 0 0.0200367928 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.00048886614 0.000252011701 0 -0.1642344886 0 0 0.005 0.09 0.000252011701 -0.00048886614 0 0.1691429944 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000103470162 -0.000540179531 0 0.0397247322 -0 0 0.005 0.09 -0.000540179531 0.000103470162 0 0.1596469718 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-4.94687461e-05 -0.000547770794 0 0.0401153916 -0 0 0.005 0.09 -0.000547770794 4.94687461e-05 0 0.1509138604 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000330462725 0.000439652576 0 0.139612753 0 0 0.005 0.09 0.000439652576 -0.000330462725 0 -0.0584064106 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.00039386767 0.000383885736 0 0.1611284526 0 0 0.005 0.09 0.000383885736 -0.00039386767 0 0.1536644962 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000405255498 0.000371844028 0 -0.00547152874 0 0 0.005 0.09 0.000371844028 -0.000405255498 0 0.0213233506 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000472865545 -0.000280888192 0 -0.1200725472 0 -0 0.005 0.09 -0.000280888192 -0.000472865545 0 0.0913110866 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000163533156 -0.000525125611 0 0.0972910832 -0 0 0.005 0.09 -0.000525125611 0.000163533156 0 -0.166710539 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000237233576 0.000496205835 0 -0.0124547445 0 0 0.005 0.09 0.000496205835 0.000237233576 0 0.1983216528 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000133998115 -0.000533427132 0 -0.0268727662 -0 0 0.005 0.09 -0.000533427132 0.000133998115 0 0.01144042692 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000344434901 -0.000428794355 0 -0.1904987452 -0 0 0.005 0.09 -0.000428794355 0.000344434901 0 -0.1391683534 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000522646848 0.000171290025 0 -0.056232534 0 0 0.005 0.09 0.000171290025 -0.000522646848 0 0.0896600482 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000322583586 0.000445465858 0 0.216582066 0 0 0.005 0.09 0.000445465858 -0.000322583586 0 -0.084623112 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000464462307 -0.000294575569 0 0.0826370616 0 -0 0.005 0.09 -0.000294575569 -0.000464462307 0 -0.0349629692 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000316157769 0.000450049181 0 0.1976142914 0 0 0.005 0.09 0.000450049181 0.000316157769 0 0.0987948346 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000313702094 -0.000451764315 0 0.217317212 -0 0 0.005 0.09 -0.000451764315 0.000313702094 0 -0.225928182 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000246564171 0.000491636156 0 0.188542478 0 0 0.005 0.09 0.000491636156 0.000246564171 0 0.0937584544 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000516657533 0.000188586833 0 -0.158201343 0 0 0.005 0.09 0.000188586833 -0.000516657533 0 0.1935506268 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000470933023 -0.000284116328 0 -0.0252863614 0 -0 0.005 0.09 -0.000284116328 -0.000470933023 0 0.00084749753 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000505528458 -0.000216658667 0 0.1788993672 -0 0 0.005 0.09 -0.000216658667 0.000505528458 0 -0.0497824208 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000102396659 0.000540384052 0 -0.1760621106 0 0 0.005 0.09 0.000540384052 0.000102396659 0 -0.0983465454 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.00014028415 0.000531808572 0 -0.1574903694 0 0 0.005 0.09 0.000531808572 0.00014028415 0 -0.12302334 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000233873403 -0.000497798384 0 -0.1672300674 0 -0 0.005 0.09 -0.000497798384 -0.000233873403 0 0.0201710132 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000539059572 -0.000109154832 0 0.0229441766 -0 0 0.005 0.09 -0.000109154832 0.000539059572 0 0.1287563168 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000437658195 -0.000333099541 0 -0.1974251294 -0 0 0.005 0.09 -0.000333099541 0.000437658195 0 -0.1775761848 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000147940154 0.000529729847 0 -0.006692334 0 0 0.005 0.09 0.000529729847 0.000147940154 0 0.1285745404 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000501322331 0.000226220955 0 0.1529033308 0 0 0.005 0.09 0.000226220955 0.000501322331 0 -0.1794535684 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000520079373 -0.000178934193 0 0.1405981984 0 -0 0.005 0.09 -0.000178934193 -0.000520079373 0 0.0838458066 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000429891644 0.000343064389 0 0.1378539108 0 0 0.005 0.09 0.000343064389 -0.000429891644 0 0.00048993873 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.00052158675 -0.000174491439 0 -0.1485506124 0 -0 0.005 0.09 -0.000174491439 -0.00052158675 0 -0.1670039286 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000546855555 -5.87282064e-05 0 0.1385589116 0 -0 0.005 0.09 -5.87282064e-05 -0.000546855555 0 0.0465002416 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="9.62572154e-05 -0.000541511356 0 0.206664052 0 -0 0.005 0.09 -0.000541511356 -9.62572154e-05 0 0.1655162124 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000545785675 6.79558422e-05 0 -0.152946149 0 0 0.005 0.09 6.79558422e-05 -0.000545785675 0 0.1343147456 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000503658243 0.000220971434 0 -0.1992645182 0 0 0.005 0.09 0.000220971434 0.000503658243 0 0.1497562106 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.00033964292 -0.000432599916 0 0.0282388514 0 -0 0.005 0.09 -0.000432599916 -0.00033964292 0 -0.163359232 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.00053444523 0.000129878006 0 0.0278012966 0 0 0.005 0.09 0.000129878006 -0.00053444523 0 -0.1627587614 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-6.3568445e-05 -0.000546314061 0 0.0543308316 -0 0 0.005 0.09 -0.000546314061 6.3568445e-05 0 0.0826126654 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000180964873 -0.000519376275 0 -0.1419981846 -0 0 0.005 0.09 -0.000519376275 0.000180964873 0 -0.1271221894 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000501270281 -0.000226336267 0 -0.1629413354 -0 0 0.005 0.09 -0.000226336267 0.000501270281 0 -0.0274768244 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000192650865 0.000515155942 0 -0.0357191506 0 0 0.005 0.09 0.000515155942 0.000192650865 0 -0.0360086044 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000544902486 7.47079699e-05 0 0.0085267466 0 0 0.005 0.09 7.47079699e-05 0.000544902486 0 0.1782420768 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000297047918 -0.000462885012 0 0.0292668438 -0 0 0.005 0.09 -0.000462885012 0.000297047918 0 -0.0894807254 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000104790449 0.000539924959 0 0.0911741554 0 0 0.005 0.09 0.000539924959 0.000104790449 0 -0.1732289182 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000532183864 0.000138853645 0 0.1792517108 0 0 0.005 0.09 0.000138853645 -0.000532183864 0 -0.0481967644 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000430872025 0.000341832266 0 -0.1786993848 0 0 0.005 0.09 0.000341832266 0.000430872025 0 -0.0401954914 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000535320409 0.000126222263 0 0.1897562102 0 0 0.005 0.09 0.000126222263 0.000535320409 0 0.1616348146 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000376678156 -0.000400766224 0 -0.1243990852 0 -0 0.005 0.09 -0.000400766224 -0.000376678156 0 -0.200896092 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-2.90645194e-05 -0.000549231512 0 0.0804273732 -0 0 0.005 0.09 -0.000549231512 2.90645194e-05 0 -0.216766574 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000154054964 0.000527983966 0 0.1658020394 0 0 0.005 0.09 0.000527983966 -0.000154054964 0 -0.22186505 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000368686461 0.000408130241 0 -0.216006398 0 0 0.005 0.09 0.000408130241 0.000368686461 0 0.176919089 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000342535975 0.0004303128 0 0.0564177906 0 0 0.005 0.09 0.0004303128 0.000342535975 0 0.0350045844 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000272708465 -0.000477629661 0 -0.01887270138 0 -0 0.005 0.09 -0.000477629661 -0.000272708465 0 -0.1688598208 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000530840117 -0.000143905421 0 0.0102291272 0 -0 0.005 0.09 -0.000143905421 -0.000530840117 0 -0.22561374 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.00028655425 0.000469453578 0 0.20915694 0 0 0.005 0.09 0.000469453578 0.00028655425 0 0.0435854952 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000340103397 -0.000432237989 0 0.1701584886 -0 0 0.005 0.09 -0.000432237989 0.000340103397 0 0.0593122282 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000466123797 -0.000291939387 0 -0.0345984114 0 -0 0.005 0.09 -0.000291939387 -0.000466123797 0 -0.0300142378 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000476370028 0.000274902885 0 -0.1867400824 0 0 0.005 0.09 0.000274902885 0.000476370028 0 0.1787858822 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-9.44633064e-05 -0.000541827171 0 0.032132092 -0 0 0.005 0.09 -0.000541827171 9.44633064e-05 0 -0.1757123636 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000195319743 -0.000514149976 0 0.172866261 0 -0 0.005 0.09 -0.000514149976 -0.000195319743 0 -0.0421748144 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000479934484 -0.000268631516 0 -0.1809421828 0 -0 0.005 0.09 -0.000268631516 -0.000479934484 0 0.1844344894 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-6.1085971e-05 -0.000546597205 0 0.217872552 -0 0 0.005 0.09 -0.000546597205 6.1085971e-05 0 -0.1425454334 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000418381029 -0.000357011645 0 -0.0837459848 -0 0 0.005 0.09 -0.000357011645 0.000418381029 0 0.00592064542 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000543814875 -8.22519432e-05 0 0.1651249654 -0 0 0.005 0.09 -8.22519432e-05 0.000543814875 0 -0.1780385766 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000253834131 0.000487922365 0 -0.1694424916 0 0 0.005 0.09 0.000487922365 -0.000253834131 0 0.1703371606 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="3.62980322e-05 0.000548800923 0 -0.022696628 0 0 0.005 0.09 0.000548800923 -3.62980322e-05 0 0.051178385 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000471966959 -0.00028239545 0 0.0506865424 -0 0 0.005 0.09 -0.00028239545 0.000471966959 0 -0.1803582408 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000546923219 -5.8094682e-05 0 -0.1476139252 0 -0 0.005 0.09 -5.8094682e-05 -0.000546923219 0 0.0337631974 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000510828233 -0.000203849249 0 0.1769586612 0 -0 0.005 0.09 -0.000203849249 -0.000510828233 0 0.1473381478 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000469120674 -0.000287098926 0 -0.21514713 0 -0 0.005 0.09 -0.000287098926 -0.000469120674 0 0.03349736 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000545419371 7.08357979e-05 0 0.1698850616 0 0 0.005 0.09 7.08357979e-05 0.000545419371 0 -0.1895738476 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000277379174 0.00047493241 0 0.1269436874 0 0 0.005 0.09 0.00047493241 -0.000277379174 0 -0.222262828 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000498502207 -0.000232369425 0 0.026486138 -0 0 0.005 0.09 -0.000232369425 0.000498502207 0 -0.171094174 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000151079301 -0.000528843119 0 0.0504564958 0 -0 0.005 0.09 -0.000528843119 -0.000151079301 0 -0.221696848 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000355206865 -0.000419914376 0 -0.1697229962 0 -0 0.005 0.09 -0.000419914376 -0.000355206865 0 -0.1760447318 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000427451442 -0.000346100079 0 -0.215629932 0 -0 0.005 0.09 -0.000346100079 -0.000427451442 0 -0.1685204822 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000461645606 0.000298970457 0 -0.1856421432 0 0 0.005 0.09 0.000298970457 -0.000461645606 0 -0.1675265508 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000271648295 0.00047823342 0 0.0277045006 0 0 0.005 0.09 0.00047823342 -0.000271648295 0 -0.00287984822 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000466590403 0.000291193056 0 0.1754434248 0 0 0.005 0.09 0.000291193056 0.000466590403 0 0.0801115672 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000387689471 -0.000390124178 0 -0.0851586822 -0 0 0.005 0.09 -0.000390124178 0.000387689471 0 0.01918759642 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000226215528 -0.00050132478 0 0.09596994 0 -0 0.005 0.09 -0.00050132478 -0.000226215528 0 -0.1512349366 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="8.23910195e-05 -0.000543793821 0 -0.165760093 0 -0 0.005 0.09 -0.000543793821 -8.23910195e-05 0 0.000405163516 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000430122107 0.000342775397 0 -0.0896166264 0 0 0.005 0.09 0.000342775397 -0.000430122107 0 -0.16263991 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-2.58117737e-05 0.000549393986 0 0.226933444 0 0 0.005 0.09 0.000549393986 2.58117737e-05 0 0.1750457494 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000454859605 0.000309196927 0 -0.0867172248 0 0 0.005 0.09 0.000309196927 -0.000454859605 0 -0.0941671988 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000548590791 -3.9346467e-05 0 0.21361804 0 -0 0.005 0.09 -3.9346467e-05 -0.000548590791 0 -0.020490084 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000534352872 0.000130257468 0 -0.207099354 0 0 0.005 0.09 0.000130257468 0.000534352872 0 -0.1700181628 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000360722574 -0.000415185771 0 -0.225964624 -0 0 0.005 0.09 -0.000415185771 0.000360722574 0 -0.212774246 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000449359068 -0.00031713787 0 0.1495150666 -0 0 0.005 0.09 -0.00031713787 0.000449359068 0 0.21791919 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000248861719 0.00049047716 0 0.1391072124 0 0 0.005 0.09 0.00049047716 0.000248861719 0 -0.0845358798 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000184372562 -0.000518176378 0 -0.0387969948 0 -0 0.005 0.09 -0.000518176378 -0.000184372562 0 0.200470794 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.00047425347 -0.000278538411 0 0.210530002 0 -0 0.005 0.09 -0.000278538411 -0.00047425347 0 0.1605963358 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000314888773 -0.000450937979 0 0.206282 0 -0 0.005 0.09 -0.000450937979 -0.000314888773 0 -0.084958105 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000197478145 0.000513324831 0 -0.0335430046 0 0 0.005 0.09 0.000513324831 0.000197478145 0 -0.0511538398 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.00034405621 -0.000429098269 0 -0.1718087184 -0 0 0.005 0.09 -0.000429098269 0.00034405621 0 0.1988654102 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.00021355668 0.000506846668 0 -0.1648824594 0 0 0.005 0.09 0.000506846668 0.00021355668 0 0.00387648132 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000269799822 0.000479278683 0 -0.0565477868 0 0 0.005 0.09 0.000479278683 0.000269799822 0 -0.0210535386 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000387562775 -0.000390250042 0 0.1285437606 0 -0 0.005 0.09 -0.000390250042 -0.000387562775 0 -0.1689906114 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000549819046 -1.41073155e-05 0 -0.0409179876 0 -0 0.005 0.09 -1.41073155e-05 -0.000549819046 0 0.0502001128 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000469096117 -0.000287139048 0 -0.0266777548 -0 0 0.005 0.09 -0.000287139048 0.000469096117 0 -0.0856621006 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.00020289404 -0.000511208381 0 0.1427979572 -0 0 0.005 0.09 -0.000511208381 0.00020289404 0 0.1613715712 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.00016780408 -0.00052377647 0 -0.0232164194 0 -0 0.005 0.09 -0.00052377647 -0.00016780408 0 0.1794097386 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000473978173 -0.000279006615 0 -0.020381543 -0 0 0.005 0.09 -0.000279006615 0.000473978173 0 -0.00447923628 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000534308469 0.000130439489 0 -0.203318298 0 0 0.005 0.09 0.000130439489 -0.000534308469 0 -0.0915514552 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000510524345 0.000204609124 0 0.201381178 0 0 0.005 0.09 0.000204609124 -0.000510524345 0 0.0364602888 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000531416017 -0.000141763949 0 0.1703014606 0 -0 0.005 0.09 -0.000141763949 -0.000531416017 0 -0.0584702358 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000189391491 0.000516363112 0 -0.029554706 0 0 0.005 0.09 0.000516363112 0.000189391491 0 -0.01397789952 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000311955617 0.000452972066 0 0.1222841712 0 0 0.005 0.09 0.000452972066 -0.000311955617 0 0.211521038 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000363417442 0.000412828975 0 0.217437964 0 0 0.005 0.09 0.000412828975 -0.000363417442 0 0.164722503 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000409704405 0.000366936372 0 -0.170357351 0 0 0.005 0.09 0.000366936372 0.000409704405 0 -0.0132549987 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.00052912099 0.000150103224 0 -0.220327824 0 0 0.005 0.09 0.000150103224 -0.00052912099 0 0.1285107186 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000253408392 -0.000488143613 0 -0.1720650166 0 -0 0.005 0.09 -0.000488143613 -0.000253408392 0 0.1871071278 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000545834391 6.75634363e-05 0 -0.0944883904 0 0 0.005 0.09 6.75634363e-05 -0.000545834391 0 -0.164563846 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000549288478 -2.79672684e-05 0 -0.1356664798 -0 0 0.005 0.09 -2.79672684e-05 0.000549288478 0 -0.0916816438 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000546707545 -6.0090433e-05 0 0.222814504 -0 0 0.005 0.09 -6.0090433e-05 0.000546707545 0 0.01182434042 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000504880559 0.000218164207 0 0.209886692 0 0 0.005 0.09 0.000218164207 -0.000504880559 0 0.0849418196 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-4.53076003e-05 -0.000548130661 0 -0.21184806 -0 0 0.005 0.09 -0.000548130661 4.53076003e-05 0 -0.1722869582 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000268046741 0.00048026133 0 -0.0208515794 0 0 0.005 0.09 0.00048026133 -0.000268046741 0 -0.173415915 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000339099238 0.000433026219 0 0.1622088814 0 0 0.005 0.09 0.000433026219 -0.000339099238 0 0.00895287778 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-9.6455832e-05 0.000541476013 0 0.195153654 0 0 0.005 0.09 0.000541476013 9.6455832e-05 0 -0.166545969 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000541482314 9.64204544e-05 0 -0.0430240434 0 0 0.005 0.09 9.64204544e-05 -0.000541482314 0 -0.217394452 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000213621417 0.000506819386 0 0.0295140528 0 0 0.005 0.09 0.000506819386 -0.000213621417 0 0.1306452716 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="3.67304712e-05 -0.00054877215 0 -0.058718783 0 -0 0.005 0.09 -0.00054877215 -3.67304712e-05 0 0.0998950876 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000374752735 -0.000402567246 0 -0.229887834 -0 0 0.005 0.09 -0.000402567246 0.000374752735 0 0.1484973784 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000377444208 0.000400044835 0 0.1677096046 0 0 0.005 0.09 0.000400044835 -0.000377444208 0 0.1408357426 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000549719636 -1.75591084e-05 0 0.02546775 0 -0 0.005 0.09 -1.75591084e-05 -0.000549719636 0 0.205066252 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.00054969489 -1.83174123e-05 0 0.1331859346 -0 0 0.005 0.09 -1.83174123e-05 0.00054969489 0 -0.200950586 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="8.54620655e-05 -0.000543319644 0 0.1787102348 0 -0 0.005 0.09 -0.000543319644 -8.54620655e-05 0 -0.1727216706 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000364029009 0.000412289802 0 -0.21277225 0 0 0.005 0.09 0.000412289802 0.000364029009 0 -0.0382685608 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.00053644321 0.000121361785 0 -0.1325948174 0 0 0.005 0.09 0.000121361785 0.00053644321 0 0.163870458 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000425256055 -0.000348794047 0 0.1838091808 -0 0 0.005 0.09 -0.000348794047 0.000425256055 0 0.01407845554 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-9.21787242e-08 0.000549999992 0 -0.1646658424 0 0 0.005 0.09 0.000549999992 9.21787242e-08 0 0.1674478252 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000258438399 -0.000485499324 0 -0.205067884 0 -0 0.005 0.09 -0.000485499324 -0.000258438399 0 0.0475656634 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000319945439 0.000447364411 0 -0.0243363898 0 0 0.005 0.09 0.000447364411 0.000319945439 0 0.225023164 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000532529033 0.000137523923 0 0.0586456878 0 0 0.005 0.09 0.000137523923 -0.000532529033 0 -0.1692809434 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="8.90582032e-05 0.000542741777 0 0.1883233198 0 0 0.005 0.09 0.000542741777 -8.90582032e-05 0 0.1400785386 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.000247680535 0.000491074692 0 0.166957949 0 0 0.005 0.09 0.000491074692 0.000247680535 0 -0.17447622 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="0.000163202122 -0.000525228586 0 -0.1929713298 0 -0 0.005 0.09 -0.000525228586 -0.000163202122 0 -0.1764864706 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+  <shape type="cube">
+    <transform name="to_world">
+      <matrix value="-0.00049468111 0.000240396755 0 -0.0444977244 0 0 0.005 0.09 0.000240396755 0.00049468111 0 -0.0473455878 0 0 0 1" />
+    </transform>
+    <ref id="hair_bsdf" />
+    <ref name="interior" id="hair_medium" />
+  </shape>
+</scene>
+
+
+
+
+
+
+
+

@@ -1,0 +1,45 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+  <defs>
+    <style>
+      .title { font: 28px Arial, sans-serif; fill: #111; }
+      .label { font: 18px Arial, sans-serif; fill: #111; }
+      .small { font: 15px Arial, sans-serif; fill: #222; }
+      .line { stroke: #111; stroke-width: 2.5; }
+      .dash { stroke: #777; stroke-width: 2.5; stroke-dasharray: 6,6; fill: none; }
+      .arrow { stroke: #111; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+      .dot { fill: #111; }
+      .scatter { fill: #777; opacity: 0.7; }
+      .surface { fill: #f2f2f2; stroke: #111; stroke-width: 2; }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,3 L0,6 Z" fill="#111" />
+    </marker>
+  </defs>
+
+  <text x="600" y="40" text-anchor="middle" class="title">Subsurface Scattering Transport (sample)</text>
+
+  <!-- Surface slab -->
+  <rect x="120" y="320" width="960" height="40" class="surface"/>
+  <line x1="120" y1="320" x2="1080" y2="320" class="line"/>
+
+  <!-- Entry and exit points -->
+  <circle cx="420" cy="320" r="6" class="dot"/>
+  <circle cx="780" cy="320" r="6" class="dot"/>
+  <text x="400" y="300" class="small">entry</text>
+  <text x="760" y="300" class="small">exit</text>
+
+  <!-- Incoming / outgoing directions -->
+  <path d="M320,140 L420,320" class="arrow"/>
+  <text x="270" y="150" class="small">incoming</text>
+  <path d="M780,320 L900,140" class="arrow"/>
+  <text x="910" y="150" class="small">outgoing</text>
+
+  <!-- Subsurface scattering path -->
+  <circle cx="470" cy="350" r="6" class="scatter"/>
+  <circle cx="520" cy="380" r="6" class="scatter"/>
+  <circle cx="600" cy="395" r="6" class="scatter"/>
+  <circle cx="680" cy="380" r="6" class="scatter"/>
+  <circle cx="730" cy="350" r="6" class="scatter"/>
+  <path d="M420,320 C500,420 700,420 780,320" class="dash"/>
+  <text x="600" y="450" text-anchor="middle" class="small">multiple scattering inside material</text>
+</svg>

@@ -1,0 +1,96 @@
+\usepackage{it_thesis}
+
+\usepackage{graphicx}
+\usepackage{amsmath,bm} 
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{array}
+\usepackage{subfig}
+\usepackage[utf8]{inputenc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{url}
+\usepackage{otf}
+%\usepackage{remreset}
+\usepackage{cite}
+\usepackage{pdfpages}
+
+\usepackage{here}
+\usepackage[top=30truemm,bottom=20truemm,left=30truemm,right=20truemm]{geometry}
+%\usepackage[font=large]{caption}
+\usepackage{times}
+\usepackage{layout}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{ulem}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{enumitem}
+\usepackage{wrapfig}
+
+% 添削時は以下は使わないこと
+%\usepackage[dvipdfmx]{hyperref}
+%\usepackage{pxjahyper}
+%\usepackage[dvipdfmx]{pdfcomment}
+
+% 必要なpackageは以下に追加
+
+\makeatletter\@removefromreset{footnote}{chapter}\makeatother
+
+\newcommand{\doi}[1]{\url{https://doi.org/#1}}
+
+\newcommand{\note}[1]{{\color{blue} {\it #1} }}
+
+\DeclareMathAlphabet{\mathsf}{OT1}{\sfdefault}{m}{n}
+\SetMathAlphabet{\mathsf}{bold}{OT1}{\sfdefault}{b}{n}
+
+\newcommand{\tens}[1]{\ensuremath{\boldsymbol{\mathsf{#1}}}}
+\newcommand{\vect}[1]{\ensuremath{\boldsymbol{#1}}}
+\newcommand{\set}[1]{\ensuremath{\mathcal{#1}}}
+
+% Math operators
+\newcommand{\diff}[2]{\frac{d {#1}}{d {#2}}}
+\newcommand{\pdiff}[2]{\frac{\partial {#1}}{\partial {#2}}}
+\newcommand{\restrict}[2]{\left. {#1} \right|_{#2}}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\dev}{dev}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\sgn}{sgn}
+\newcommand{\argmin}{\mathop{\rm arg~min}\limits}
+
+% vectors
+\newcommand{\vf}{\vect{f}}
+\newcommand{\vp}{\vect{p}}
+\newcommand{\vw}{\vect{w}}
+\newcommand{\vz}{\vect{z}}
+
+
+\newcommand{\vwk}{{\vw^{(k)}}}
+\newcommand{\vzk}{{\vz^{(k)}}}
+\newcommand{\vzkone}{{\vz^{(k+1)}}}
+\newcommand{\vzzero}{{\vz^{(0)}}}
+\newcommand{\vzstar}{{\vz^{*}}}
+
+% tensors
+\newcommand{\tZ}{\tens{Z}}
+
+% sets
+\newcommand{\sW}{\set{W}}
+
+
+% Algorithm
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}  % Use Input in the format of Algorithm
+\renewcommand{\algorithmicensure}{\textbf{Output:}} % Use Output in the format of Algorithm
+\newcommand{\algorithmautorefname}{Algorithm}
+
+\algnewcommand{\algorithmicand}{\textbf{ and }}
+\algnewcommand{\algorithmicor}{\textbf{ or }}
+\algnewcommand{\Or}{\algorithmicor}
+\algnewcommand{\And}{\algorithmicand}
+\algnewcommand{\algorithmictrue}{\textbf{true}}
+\algnewcommand{\True}{\algorithmictrue}
+
+
+\renewcommand{\bibname}{参考文献}

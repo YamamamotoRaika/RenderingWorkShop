@@ -1,0 +1,196 @@
+% 青山学院大学 理工学部 情報テクノロジー学科
+% 大原研究室 卒論/修論 スタイルファイル
+% pLaTeX2e(ASCII)用
+% Prepared by Yu Fujimoto (2010/01/05)
+% Last Modified at 2022/09/19 by Kozo Ohara
+% e-mail: ohara@it.aoyama.ac.jp 
+\pagestyle{empty}
+% Added by Yu Fujimoto (2010/01/21)
+\usepackage{type1cm}
+% Modified by Yu Fujimoto (2010/01/27)
+\usepackage{setspace}
+\onehalfspacing
+% Added by Kozo Ohara (2023/04/22)
+\usepackage{pdfpages}
+
+% Modified by Yu Fujimoto (2010/01/27)
+\textwidth 158mm
+\oddsidemargin 5mm
+\evensidemargin 5mm    % added by Kozo Ohara (2022/09/13)
+\textheight 243mm
+\topmargin -11mm
+%\topmargin -8mm
+\setlength{\columnsep}{7mm}
+\setlength{\textfloatsep}{6mm}
+% Modified by Yu Fujimoto (2010/01/27)
+\setlength{\intextsep}{6mm}
+
+% 論文題目等の大きさ
+% Modified by Yu Fujimoto (2010/01/21)
+\newcommand{\ftitle}{\userelfont\fontfamily{gt}\fontsize{24pt}{28pt}\selectfont}
+\newcommand{\fsubtitle}{\userelfont\fontfamily{gt}\fontsize{18pt}{18pt}\selectfont}
+\newcommand{\fauthor}{\userelfont\fontfamily{gt}\fontsize{16pt}{16pt}\selectfont}
+\newcommand{\fcover}{\userelfont\fontfamily{gt}\fontsize{20pt}{20pt}\selectfont}
+
+\def\teacher#1{\gdef\@teacher{#1}} % 指導教員名
+\def\subtitle#1{\gdef\@subtitle{#1}} % サブタイトル   added by Ohara (2022/09/19)
+
+% 卒論・修論に応じた処理
+% Added by Kozo Ohara (2012/07/30)
+\def\grade#1{\gdef\@grade{#1}} % 卒論/修論
+\def\year#1{\gdef\@year{#1}} % 卒業・終了年度
+
+\def\bheading{
+  \begin{center}{\fcover
+    青山学院大学理工学部\\
+    情報テクノロジー学科\\
+    {\@year}年度卒業研究論文\par}
+  \end{center}
+}
+\gdef\mheading{
+  \vspace{1.8em}
+  \begin{center}{
+    \begin{spacing}{0.9}\fcover
+    青山学院大学大学院\\
+    理工学研究科理工学専攻\\
+    知能情報コース\\
+    {\@year}年度修士研究論文
+    \end{spacing}}
+  \end{center}
+}
+\gdef\@titlehead{
+  \def\@Bachelor{B4}
+  \ifx \@grade\@Bachelor \bheading
+  \else 
+    \def\@Master{M2}
+    \ifx \@grade\@Master \mheading \else ??? \fi
+  \fi
+}
+
+\renewcommand{\thefigure}{\thechapter-\arabic{figure}}
+\@addtoreset{figure}{chapter}
+\renewcommand{\thetable}{\thechapter-\arabic{table}}
+\@addtoreset{table}{chapter}
+
+\fboxrule=3\fboxrule
+
+\renewcommand{\maketitle}{\par
+  \begingroup
+    \renewcommand{\thefootnote}{\fnsymbol{footnote}}%
+    \def\@makefnmark{\hbox to\z@{$\m@th^{\@thefnmark}$\hss}}%
+    \long\def\@makefntext##1{\parindent 1em\noindent
+            \hbox to1.8em{\hss$\m@th^{\@thefnmark}$}##1}%
+    \if@twocolumn
+      \ifnum \col@number=\@ne
+        \@maketitle
+      \else
+        \twocolumn[\@maketitle]%
+      \fi
+    \else
+      \newpage
+      \global\@topnum\z@   % Prevents figures from going at top of page.
+      \@maketitle
+    \fi
+    \@thanks
+  \endgroup
+  \setcounter{footnote}{0}%
+  \let\thanks\relax
+  \let\maketitle\relax\let\@maketitle\relax
+  \gdef\@thanks{}\gdef\@author{}\gdef\@title{}}
+\def\@maketitle{%
+  \newpage
+  \null
+  \vskip 2em%
+  \setlength{\unitlength}{1mm}
+  \begin{center}%
+    \fbox{
+    % Modified by Yu Fujimoto (2011/07/28)
+      \begin{minipage}[c][.12\textheight][c]{.8\textwidth}
+        % Modified by Kozo Ohara (2012/07/30)
+        \@titlehead
+        %  \begin{center}{\fcover
+        %    青山学院大学理工学部\\
+        %    情報テクノロジー学科\\
+        %    {\@year}年度卒業研究論文}
+        %  \end{center}
+      \end{minipage}}
+    \vskip 3em%
+    \fbox{
+	  % modified by Ohara (2022/09/19)
+      \begin{minipage}[c][.2\textheight][t]{.8\textwidth}%
+	    %\vskip 1em 
+		\vspace{\fill}
+		\begin{spacing}{0.9}
+          \begin{center}\ftitle \@title\par\end{center}
+		  \begin{center}\fsubtitle \@subtitle\par\end{center}
+		\end{spacing}
+		\vspace{\fill}
+      \end{minipage}}
+    \vskip 3em%
+    {\fauthor \@date}
+    \vskip 3em%
+    \fbox{
+      \begin{minipage}[c][.1\textheight][c]{.8\textwidth}
+        \begin{center} {\fauthor 指導教員 \@teacher} \end{center}
+      \end{minipage}}
+    \vskip 2em%
+    \fbox{
+      \begin{minipage}[c][.25\textheight][c]{.8\textwidth}
+        \begin{center} {\fauthor \@author} \end{center}
+      \end{minipage}}
+  \end{center}%
+  \par
+  \vskip 1.5em
+}
+
+
+
+% added by Kozo Ohara (2021/12/17)
+\newcommand{\abstract}[1]{
+  \def\@Bachelor{B4}
+  \ifx \@grade\@Bachelor
+    \newpage
+    %\thispagestyle{plain}
+	%\pagenumbering{Roman}
+    \begin{center}
+      {\LARGE 卒業研究論文要旨}
+    \end{center}
+	\vskip 1.5em
+	\par
+	#1
+  \fi
+}
+
+
+% added by Kozo Ohara (2012/07/30)
+\renewcommand{\bibname}{参考文献}
+
+\renewenvironment{thebibliography}[1]% 再定義
+{\chapter*{\bibname\@mkboth{\bibname}{\bibname}}%
+ \addcontentsline{toc}{chapter}{\bibname}% この行追加
+   \list{\@biblabel{\@arabic\c@enumiv}}%
+        {\settowidth\labelwidth{\@biblabel{#1}}%
+         \leftmargin\labelwidth
+         \advance\leftmargin\labelsep
+         \@openbib@code
+         \usecounter{enumiv}%
+         \let\p@enumiv\@empty
+         \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+   \sloppy
+   \clubpenalty4000
+   \@clubpenalty\clubpenalty
+   \widowpenalty4000%
+   \sfcode`\.\@m}
+  {\def\@noitemerr
+    {\@latex@warning{Empty `thebibliography' environment}}%
+   \endlist}
+
+%%
+%% added by Ohara (2018/09/07)
+%%  for IPSJ ipsjunsrt.bst
+%%
+\def\：{\nobreak\protect\makebox[1zw][l]{：}\ignorespaces}
+
+%%
+%% added by Ohara (2022/09/13)
+\setdisplayskipstretch{}

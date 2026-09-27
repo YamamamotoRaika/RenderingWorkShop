@@ -1,0 +1,59 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <defs>
+    <style>
+      .title { font: 28px Arial, sans-serif; fill: #111; }
+      .label { font: 20px Arial, sans-serif; fill: #111; }
+      .small { font: 16px Arial, sans-serif; fill: #222; }
+      .line { stroke: #111; stroke-width: 2.5; }
+      .arrow { stroke: #111; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+      .dot { fill: #111; }
+      .scatter { fill: #777; opacity: 0.7; }
+      .layer1 { fill: #fdebd0; stroke: #111; stroke-width: 1.5; }
+      .layer2 { fill: #f7c6c7; stroke: #111; stroke-width: 1.5; }
+      .layer3 { fill: #f1b5b8; stroke: #111; stroke-width: 1.5; }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,3 L0,6 Z" fill="#111" />
+    </marker>
+  </defs>
+
+  <text x="600" y="40" text-anchor="middle" class="title">Layered Skin + BSSRDF concept (sample)</text>
+
+  <!-- Layers -->
+  <rect x="150" y="160" width="900" height="60" class="layer1"/>
+  <rect x="150" y="220" width="900" height="110" class="layer2"/>
+  <rect x="150" y="330" width="900" height="170" class="layer3"/>
+
+  <text x="170" y="200" class="label">Epidermis</text>
+  <text x="170" y="280" class="label">Dermis</text>
+  <text x="170" y="410" class="label">Subcutaneous</text>
+
+  <!-- Surface line -->
+  <line x1="150" y1="160" x2="1050" y2="160" class="line"/>
+
+  <!-- Incoming light -->
+  <path d="M420,80 L520,160" class="arrow"/>
+  <text x="380" y="90" class="small">incoming light</text>
+
+  <!-- Scattering path -->
+  <circle cx="540" cy="220" r="6" class="scatter"/>
+  <circle cx="585" cy="260" r="6" class="scatter"/>
+  <circle cx="640" cy="300" r="6" class="scatter"/>
+  <circle cx="700" cy="330" r="6" class="scatter"/>
+  <circle cx="760" cy="300" r="6" class="scatter"/>
+  <path d="M520,160 C560,230 650,360 820,200" class="line" stroke="#777" fill="none" stroke-dasharray="6,6"/>
+  <text x="720" y="360" class="small">multiple scattering</text>
+
+  <!-- Exit point and outgoing -->
+  <circle cx="820" cy="160" r="6" class="dot"/>
+  <path d="M820,160 L930,90" class="arrow"/>
+  <text x="935" y="90" class="small">outgoing</text>
+
+  <!-- Entry point -->
+  <circle cx="520" cy="160" r="6" class="dot"/>
+  <text x="500" y="140" class="small">entry</text>
+  <text x="800" y="140" class="small">exit</text>
+
+  <!-- Notes -->
+  <text x="150" y="560" class="small">This is a conceptual diagram inspired by layered skin models (e.g., Jensen & Buhler 2007).</text>
+</svg>

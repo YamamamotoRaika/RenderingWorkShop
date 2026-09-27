@@ -1,0 +1,51 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+  <defs>
+    <style>
+      .title { font: 28px Arial, sans-serif; fill: #111; }
+      .label { font: 20px Arial, sans-serif; fill: #111; }
+      .small { font: 16px Arial, sans-serif; fill: #222; }
+      .line { stroke: #111; stroke-width: 3; }
+      .arrow { stroke: #111; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .dot { fill: #111; }
+      .scatter { fill: #777; opacity: 0.7; }
+      .surface { fill: #f2f2f2; stroke: #111; stroke-width: 2; }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,3 L0,6 Z" fill="#111" />
+    </marker>
+  </defs>
+
+  <text x="600" y="40" text-anchor="middle" class="title">BRDF vs BSSRDF (concept)</text>
+
+  <!-- Left panel: BRDF -->
+  <rect x="80" y="80" width="500" height="460" fill="none" stroke="#ddd" stroke-width="2"/>
+  <text x="330" y="120" text-anchor="middle" class="label">BRDF (same point)</text>
+  <rect x="140" y="360" width="380" height="40" class="surface"/>
+  <circle cx="330" cy="360" r="6" class="dot"/>
+  <text x="330" y="430" text-anchor="middle" class="small">surface point</text>
+  <path d="M220,220 L330,360" class="arrow"/>
+  <text x="200" y="210" class="small">incoming</text>
+  <path d="M330,360 L440,220" class="arrow"/>
+  <text x="450" y="210" class="small">outgoing</text>
+
+  <!-- Right panel: BSSRDF -->
+  <rect x="620" y="80" width="500" height="460" fill="none" stroke="#ddd" stroke-width="2"/>
+  <text x="870" y="120" text-anchor="middle" class="label">BSSRDF (different points)</text>
+  <rect x="680" y="360" width="380" height="40" class="surface"/>
+  <circle cx="800" cy="360" r="6" class="dot"/>
+  <circle cx="940" cy="360" r="6" class="dot"/>
+  <text x="800" y="430" text-anchor="middle" class="small">entry</text>
+  <text x="940" y="430" text-anchor="middle" class="small">exit</text>
+  <path d="M740,220 L800,360" class="arrow"/>
+  <text x="720" y="210" class="small">incoming</text>
+  <path d="M940,360 L1020,220" class="arrow"/>
+  <text x="1030" y="210" class="small">outgoing</text>
+
+  <!-- Subsurface scattering path -->
+  <circle cx="830" cy="380" r="6" class="scatter"/>
+  <circle cx="860" cy="400" r="6" class="scatter"/>
+  <circle cx="890" cy="410" r="6" class="scatter"/>
+  <circle cx="920" cy="395" r="6" class="scatter"/>
+  <path d="M800,360 C830,410 890,430 940,360" class="line" stroke="#777" fill="none" stroke-dasharray="6,6"/>
+  <text x="870" y="470" text-anchor="middle" class="small">subsurface scattering</text>
+</svg>

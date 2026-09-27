@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<scene version="3.0.0">
+
+<integrator type="volpathmis">
+  <integer name="max_depth" value="8"/>
+  <boolean name="hide_emitters" value="true"/>
+</integrator>
+
+<!--
+  <emitter type="point">
+    <rgb name="intensity" value="5000,5000,5000"/>
+    <transform name="to_world">
+      <translate x="0" y="0.25" z="0"/>
+    </transform>
+  </emitter>
+-->
+<!--   
+<emitter type="spot" id="keylight">
+  <rgb name="intensity" value="5000,5000,5000"/>
+  <float name="cutoff_angle" value="5"/>     
+  <float name="beam_width" value="3"/>
+  <transform name="to_world">
+    <lookat origin="0,0.25,0" target="0,0,0" up="0,0,1"/>
+  </transform>
+</emitter>
+-->
+
+<!-- Small disk area light (point-source approximation) -->
+<shape type="disk" id="src_disk">
+  <transform name="to_world">
+    <!-- 半径を小さく：例 0.0005 (シーン単位) -->
+    <scale value="0.0005"/>
+    <!-- skin 上面から少し浮かせる -->
+    <translate x="0" y="0.2501" z="0"/>
+    <!-- 下向きにする必要がある場合は回転を追加 -->
+  </transform>
+
+  <emitter type="point" id="keylight">
+  <point name="position" x="0" y="0.2501" z="0"/>
+  <rgb name="intensity" value="1,1,1"/>
+</emitter>
+
+
+  <!-- 光源自体は見た目に不要なら null bsdf -->
+  <bsdf type="null"/>
+</shape>
+
+  <medium type="homogeneous" id="skin_medium">
+    <rgb name="albedo" value="0.95, 0.85, 0.75"/>
+    <float name="sigma_t" value="50.0"/>
+    <phase type="hg">
+      <float name="g" value="0.0"/>
+    </phase>
+  </medium>
+
+  <!-- 境界は null：medium への入出を邪魔しない -->
+  <bsdf type="null" id="skin_boundary"/>
+
+  <bsdf type="diffuse" id="black">
+    <rgb name="reflectance" value="0,0,0"/>
+  </bsdf>
+
+  
+  <!-- Skin slab -->
+  <shape type="cube" id="skin">
+    <transform name="to_world">
+      <scale x="5.0" y="0.1" z="5.0"/>
+      <translate x="0" y="0.0" z="0"/>
+    </transform>
+
+    <ref id="skin_boundary"/>
+
+    <!-- ★これが正解：shape に medium を割り当てる -->
+    <ref name="interior" id="skin_medium"/>
+  </shape>
+
+  
+  <!-- Probe disk -->
+  <shape type="disk" id="probe">
+    <transform name="to_world">
+      <!-- Pythonで上書きされる前提：とりあえず有効な値 -->
+      <rotate x="1" angle="90"/>
+      <translate x="0.01" y="0.0101" z="0.0"/>
+      <scale value="0.005"/>
+    </transform>
+
+    <sensor type="irradiancemeter">
+      <sampler type="independent">
+        <integer name="sample_count" value="256"/>
+      </sampler>
+      <film type="hdrfilm">
+        <integer name="width" value="1"/>
+        <integer name="height" value="1"/>
+        <string name="pixel_format" value="rgb"/>
+        <string name="component_format" value="float32"/>
+        <rfilter type="box"/>
+      </film>
+    </sensor>
+  </shape>
+
+</scene>
